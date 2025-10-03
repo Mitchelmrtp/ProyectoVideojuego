@@ -87,10 +87,5 @@ git clone [URL_DEL_REPOSITORIO]
 # Configurar proyecto para 2D en Project Settings
 ```
 
-## 👥 Equipo de Desarrollo
 
-- **Desarrollador Principal**: [Tu Nombre]
-- **Diseño de Niveles**: [Nombre]
-- **Pixel Artist**: [Nombre]
-- **Audio**: [Nombre]
 
