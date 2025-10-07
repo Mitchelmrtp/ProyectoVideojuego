@@ -1,7 +1,82 @@
 fileFormatVersion: 2
-guid: 22f00047452b2624fb5768391c019fff
+guid: d39ee582514f41f4f8c023e01bdaece9
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 2240906702796148443
+    second: portal_f_0
+  - first:
+      213: 8170760083715251959
+    second: portal_f_1
+  - first:
+      213: -9155136313843856484
+    second: portal_f_2
+  - first:
+      213: -158943508927994956
+    second: portal_f_3
+  - first:
+      213: 2469546927375268263
+    second: portal_f_4
+  - first:
+      213: -3620547631945197754
+    second: portal_f_5
+  - first:
+      213: -5154927744217933730
+    second: portal_f_6
+  - first:
+      213: -1351494156100346251
+    second: portal_f_7
+  - first:
+      213: -6165200239093157014
+    second: portal_f_8
+  - first:
+      213: 4330454077642648704
+    second: portal_f_9
+  - first:
+      213: -2444278146606806685
+    second: portal_f_10
+  - first:
+      213: 4236519379885191195
+    second: portal_f_11
+  - first:
+      213: 6231488617969517040
+    second: portal_f_12
+  - first:
+      213: -2730203218414656257
+    second: portal_f_13
+  - first:
+      213: 5610150849102891580
+    second: portal_f_14
+  - first:
+      213: -1476869080825413382
+    second: portal_f_15
+  - first:
+      213: 7181739064985061902
+    second: portal_f_16
+  - first:
+      213: 637213906033836693
+    second: portal_f_17
+  - first:
+      213: -3991171564978552064
+    second: portal_f_18
+  - first:
+      213: -2337560019563159291
+    second: portal_f_19
+  - first:
+      213: -4165238780660309712
+    second: portal_f_20
+  - first:
+      213: 675309272764093596
+    second: portal_f_21
+  - first:
+      213: -4490440958879951845
+    second: portal_f_22
+  - first:
+      213: 3268924030675578202
+    second: portal_f_23
+  - first:
+      213: 9072350177955138105
+    second: portal_f_24
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -34,7 +109,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -48,7 +123,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 128
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -94,19 +169,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Server
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -123,177 +185,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Attack S_0
+      name: portal_f_4
       rect:
         serializedVersion: 2
-        x: 50
-        y: 41
-        width: 38
-        height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 270
+        y: 240
+        width: 313
+        height: 387
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 23d85f3bafc9a8243a938dd72eb5f5bd
-      internalID: 564822165
+      spriteID: 7a93c52a8d7954220800000000000000
+      internalID: 2469546927375268263
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack S_1
+      name: portal_f_7
       rect:
         serializedVersion: 2
-        x: 175
-        y: 41
-        width: 35
-        height: 43
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 645
+        y: 240
+        width: 335
+        height: 398
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 3b350ec9f3de9774aa1ed13e8af84a13
-      internalID: -279229678
+      spriteID: 57e5f9db9378e3de0800000000000000
+      internalID: -1351494156100346251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack S_2
+      name: portal_f_17
       rect:
         serializedVersion: 2
-        x: 294
-        y: 41
-        width: 31
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 7
+        y: 240
+        width: 218
+        height: 243
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 19504ce6d9001ec4582b3aef4d293fed
-      internalID: -134219435
+      spriteID: 5920613eba6d7d800800000000000000
+      internalID: 637213906033836693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack S_3
+      name: portal_f_18
       rect:
         serializedVersion: 2
-        x: 419
-        y: 41
-        width: 30
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1005
+        y: 241
+        width: 195
+        height: 243
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 508f487818d7bcc4ab3905cbb4cc0085
-      internalID: -41437703
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Attack S_4
-      rect:
-        serializedVersion: 2
-        x: 544
-        y: 40
-        width: 31
-        height: 49
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 26b133b7d4335894381f028221d01107
-      internalID: -1681984070
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Attack S_5
-      rect:
-        serializedVersion: 2
-        x: 673
-        y: 41
-        width: 26
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 14a74e8f7363cc849927fa12fb059a1b
-      internalID: -1688989936
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Attack S_6
-      rect:
-        serializedVersion: 2
-        x: 806
-        y: 41
-        width: 68
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b8a162d67e0d65047ad6c7d57afa2b5f
-      internalID: 512953860
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Attack S_7
-      rect:
-        serializedVersion: 2
-        x: 931
-        y: 41
-        width: 68
-        height: 44
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d0be19b9398bfee49874381678119577
-      internalID: -1529058120
+      spriteID: 00340d79b928c98c0800000000000000
+      internalID: -3991171564978552064
       vertices: []
       indices: 
       edges: []
@@ -302,7 +276,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: f52fdd82a366ec144a6c0b2923e29f4e
     internalID: 0
     vertices: []
     indices: 
@@ -312,14 +286,31 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Attack S_0: 564822165
-      Attack S_1: -279229678
-      Attack S_2: -134219435
-      Attack S_3: -41437703
-      Attack S_4: -1681984070
-      Attack S_5: -1688989936
-      Attack S_6: 512953860
-      Attack S_7: -1529058120
+      portal_f_0: 2240906702796148443
+      portal_f_1: 8170760083715251959
+      portal_f_10: -2444278146606806685
+      portal_f_11: 4236519379885191195
+      portal_f_12: 6231488617969517040
+      portal_f_13: -2730203218414656257
+      portal_f_14: 5610150849102891580
+      portal_f_15: -1476869080825413382
+      portal_f_16: 7181739064985061902
+      portal_f_17: 637213906033836693
+      portal_f_18: -3991171564978552064
+      portal_f_19: -2337560019563159291
+      portal_f_2: -9155136313843856484
+      portal_f_20: -4165238780660309712
+      portal_f_21: 675309272764093596
+      portal_f_22: -4490440958879951845
+      portal_f_23: 3268924030675578202
+      portal_f_24: 9072350177955138105
+      portal_f_3: -158943508927994956
+      portal_f_4: 2469546927375268263
+      portal_f_5: -3620547631945197754
+      portal_f_6: -5154927744217933730
+      portal_f_7: -1351494156100346251
+      portal_f_8: -6165200239093157014
+      portal_f_9: 4330454077642648704
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -15,70 +15,83 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D body;
     private SpriteRenderer sprite;
 
+    private bool isGravedadInvertida = false; // Para saber si la gravedad está invertida
+    private bool invertirFlip = false; // Controla si la dirección del flipX debe ser invertida
+
     private void Awake()
     {
         body = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        // Acá detectamos si estamos en el piso.
+        // Detectamos si estamos en el piso.
         Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
-        // Si existe colisión entonces estamos en el piso y podemos saltar (canJump)
-        bool canJump = colision != null;
+        bool canJump = colision != null;  // Si podemos saltar (estamos en el piso)
 
         Vector2 move = moveAction.ReadValue<Vector2>();
-
-        // Para los juegos de plataforma, la velocidad en Y no se considera m�s que para el salto
-        // pero al presionar los dos botones, la velocidad en "x" y "y" se normalizan x = 0.71 y y = 0.71
         int direction = move.x == 0 ? 0 : move.x > 0 ? 1 : -1;
-        //if (move.x == 0)
-        //{
-        //    direction = 0;
-        //}
-        //else
-        //{
-        //    if (move.x > 0)
-        //    {
-        //        direction = 1;
-        //    }
-        //    else
-        //    {
-        //        direction = -1;
-        //    }
-        //}
-        body.linearVelocityX = direction * speed;
 
-        if (direction != 0)
+        // Si la variable invertirFlip está activada, invertimos la lógica del flipX
+        // Esto cambia la forma en que se determina si el sprite se voltea.
+        if (invertirFlip)
         {
-            sprite.flipX = direction < 0 ? true : false;
+            sprite.flipX = direction > 0; // Invertimos la lógica de flipX
+        }
+        else
+        {
+            sprite.flipX = direction < 0; // Comportamiento normal de flipX
         }
 
+        // Control de movimiento en X
+        body.linearVelocity = new Vector2(direction * speed, body.linearVelocity.y);
+
+        // Salto
         if (jumpAction.WasPressedThisFrame() && canJump)
         {
             Debug.Log("El sapo debe saltar...");
-            body.linearVelocityY = jumpImpulse;
+            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpImpulse);
+        }
+
+        // Si la gravedad está invertida, la velocidad en Y se invierte también.
+        if (isGravedadInvertida)
+        {
+            body.gravityScale = -1;  // Cambiar la gravedad al modo invertido
+        }
+        else
+        {
+            body.gravityScale = 1;  // Normalizar la gravedad
         }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        // Si colisionamos con la zona de muerte "DeadZone" o colisionamos con un enemigo
         if (collision.gameObject.CompareTag("DeadZone") || collision.gameObject.CompareTag("Enemy"))
         {
-            // Ubicamos el SpawnPoint, eso significa que el spawnpoint debe tener su etiqueta (tag)
-            GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
             // Mandamos al player a esa posición.
+            GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
             transform.localPosition = spawn.transform.localPosition;
         }
+        else if (collision.CompareTag("ZonaGravedad"))
+        {
+            // Cambiar la gravedad e invertir la lógica de flip
+            CambiarGravedad();
+        }
+    }
+
+    void CambiarGravedad()
+    {
+        // Activamos o desactivamos la gravedad invertida
+        isGravedadInvertida = !isGravedadInvertida;
+
+        // Invertimos la lógica del flipX
+        invertirFlip = !invertirFlip;
     }
 }
