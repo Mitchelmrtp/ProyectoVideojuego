@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer sprite;
 
     private bool isGravedadInvertida = false; // Para saber si la gravedad está invertida
-    private bool invertirFlip = false; // Controla si la dirección del flipX debe ser invertida
 
     private void Awake()
     {
@@ -39,15 +38,17 @@ public class PlayerController : MonoBehaviour
         Vector2 move = moveAction.ReadValue<Vector2>();
         int direction = move.x == 0 ? 0 : move.x > 0 ? 1 : -1;
 
-        // Si la variable invertirFlip está activada, invertimos la lógica del flipX
-        // Esto cambia la forma en que se determina si el sprite se voltea.
-        if (invertirFlip)
+        // Cuando la gravedad está invertida, el personaje está rotado 180 grados
+        // por lo que necesitamos invertir la lógica del flipX
+        if (isGravedadInvertida)
         {
-            sprite.flipX = direction > 0; // Invertimos la lógica de flipX
+            // Con gravedad invertida y rotación 180°, invertimos la lógica de flipX
+            sprite.flipX = direction > 0;
         }
         else
         {
-            sprite.flipX = direction < 0; // Comportamiento normal de flipX
+            // Comportamiento normal de flipX
+            sprite.flipX = direction < 0;
         }
 
         // Control de movimiento en X
@@ -57,7 +58,9 @@ public class PlayerController : MonoBehaviour
         if (jumpAction.WasPressedThisFrame() && canJump)
         {
             Debug.Log("El sapo debe saltar...");
-            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpImpulse);
+            // Si la gravedad está invertida, saltamos en dirección opuesta
+            float jumpDirection = isGravedadInvertida ? -jumpImpulse : jumpImpulse;
+            body.linearVelocity = new Vector2(body.linearVelocity.x, jumpDirection);
         }
 
         // Si la gravedad está invertida, la velocidad en Y se invierte también.
@@ -86,12 +89,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void CambiarGravedad()
+    public void CambiarGravedad()
     {
         // Activamos o desactivamos la gravedad invertida
         isGravedadInvertida = !isGravedadInvertida;
-
-        // Invertimos la lógica del flipX
-        invertirFlip = !invertirFlip;
+        
+        // Rotamos el personaje según el estado de la gravedad
+        if (isGravedadInvertida)
+        {
+            // Gravedad invertida: rotar 180 grados
+            transform.rotation = Quaternion.Euler(0, 0, 180);
+        }
+        else
+        {
+            // Gravedad normal: sin rotación
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - SpawnPoint
   - Enemy
   - Ground
+  - ZonaGravedad
   layers:
   - Default
   - TransparentFX

@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class GravedadCambio : MonoBehaviour
 {
@@ -6,12 +6,12 @@ public class GravedadCambio : MonoBehaviour
     public float gravedadInvertida = 9.81f; // Gravedad invertida
     public GameObject personaje;  // El objeto del personaje
 
-    private bool gravedadInvertidaActiva = false; // Controla si la gravedad ya est· invertida
+    private bool gravedadInvertidaActiva = false; // Controla si la gravedad ya est√° invertida
 
-    // Este mÈtodo es llamado cuando el personaje entra en la zona de cambio de gravedad
+    // Este m√©todo es llamado cuando el personaje entra en la zona de cambio de gravedad
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.CompareTag("Player") && !gravedadInvertidaActiva)  // Aseg˙rate de que el personaje tiene el tag "Player" y la gravedad no est· invertida a˙n
+        if (col.CompareTag("Player") && !gravedadInvertidaActiva)  // Aseg√∫rate de que el personaje tiene el tag "Player" y la gravedad no est√° invertida a√∫n
         {
             CambiarGravedad();
         }
@@ -19,26 +19,32 @@ public class GravedadCambio : MonoBehaviour
 
     void CambiarGravedad()
     {
-        // Cambia la gravedad a la invertida
-        Physics2D.gravity = new Vector2(0, gravedadInvertida);
+        // Obtener el PlayerController del personaje
+        PlayerController playerController = personaje.GetComponent<PlayerController>();
+        
+        if (playerController != null)
+        {
+            // Llamar al m√©todo CambiarGravedad del PlayerController
+            playerController.SendMessage("CambiarGravedad");
+        }
 
-        // Cambia la rotaciÛn de la imagen del personaje a 180 grados
-        personaje.transform.rotation = Quaternion.Euler(0, 0, 180);
-
-        // Marca que la gravedad est· invertida permanentemente
+        // Marca que la gravedad est√° invertida permanentemente
         gravedadInvertidaActiva = true;
     }
 
-    // Si deseas restaurar la gravedad de alguna manera, puedes agregar otro mÈtodo que se llame cuando lo desees.
+    // Si deseas restaurar la gravedad de alguna manera, puedes agregar otro m√©todo que se llame cuando lo desees.
     public void RestablecerGravedad()
     {
-        // Restaura la gravedad a la normal
-        Physics2D.gravity = new Vector2(0, gravedadNormal);
+        // Obtener el PlayerController del personaje
+        PlayerController playerController = personaje.GetComponent<PlayerController>();
+        
+        if (playerController != null)
+        {
+            // Llamar al m√©todo CambiarGravedad del PlayerController para restaurar
+            playerController.SendMessage("CambiarGravedad");
+        }
 
-        // Restaura la rotaciÛn del personaje a la normal
-        personaje.transform.rotation = Quaternion.Euler(0, 0, 0);
-
-        // Marca que la gravedad volviÛ a la normal
+        // Marca que la gravedad volvi√≥ a la normal
         gravedadInvertidaActiva = false;
     }
 }
