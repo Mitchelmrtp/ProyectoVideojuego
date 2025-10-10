@@ -63,7 +63,7 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void Update()
+    private void Update()   
     {
         if (direction != 0)
         {
