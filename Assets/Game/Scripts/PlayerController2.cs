@@ -230,12 +230,7 @@ public class PlayerController2 : MonoBehaviour
         if (collision.gameObject.CompareTag("DeadZone"))
         {
             Debug.Log("Entrando en DeadZone - Respawning");
-            // Mandamos al player a esa posición.
-            GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
-            if (spawn != null)
-            {
-                transform.localPosition = spawn.transform.localPosition;
-            }
+            PlayerDeath();
         }
         else if (collision.CompareTag("ZonaGravedad"))
         {
@@ -243,10 +238,63 @@ public class PlayerController2 : MonoBehaviour
             // Cambiar la gravedad e invertir la lógica de flip
             CambiarGravedad();
         }
+        else if (collision.CompareTag("Enemy"))
+        {
+            Debug.Log("Tocaste un enemigo - Muriendo");
+            PlayerDeath();
+        }
         else
         {
             Debug.Log($"Tag no reconocido: {collision.gameObject.tag}");
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log($"Colisión detectada con: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
+        
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Colisionaste con un enemigo - Muriendo");
+            PlayerDeath();
+        }
+    }
+
+    public void PlayerDeath()
+    {
+        Debug.Log("¡Jugador ha muerto! Respawneando...");
+        
+        // Detener el movimiento
+        rb.linearVelocity = Vector2.zero;
+        
+        // Buscar el punto de spawn
+        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
+        if (spawn != null)
+        {
+            // Resetear posición
+            transform.localPosition = spawn.transform.localPosition;
+            
+            // Resetear rotación (en caso de que estuviera con gravedad invertida)
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // Resetear gravedad a normal
+            isGravedadInvertida = false;
+            rb.gravityScale = 1;
+            
+            // Resetear sprite flip
+            spriteRenderer.flipX = false;
+            
+            Debug.Log($"Jugador respawneado en: {spawn.transform.localPosition}");
+        }
+        else
+        {
+            Debug.LogError("No se encontró ningún SpawnPoint con tag 'SpawnPoint'");
+            // Como fallback, resetear posición a origen
+            transform.localPosition = Vector3.zero;
+        }
+        
+        // Asegurar que el jugador pueda moverse después del respawn
+        UnlockMovement();
     }
 
     public void CambiarGravedad()
