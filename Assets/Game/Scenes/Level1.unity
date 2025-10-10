@@ -7853,6 +7853,11 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &771878123 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6548626434366850739, guid: f43d5697198db1f458c5fc42ad652665, type: 3}
+  m_PrefabInstance: {fileID: 5645203806019175861}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &856760096
 GameObject:
   m_ObjectHideFlags: 0
@@ -10146,7 +10151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravedadNormal: -9.81
   gravedadInvertida: 9.81
-  personaje: {fileID: 0}
+  personaje: {fileID: 771878123}
 --- !u!1 &1280735424
 GameObject:
   m_ObjectHideFlags: 0
