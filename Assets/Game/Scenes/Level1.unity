@@ -229,83 +229,6 @@ PrefabInstance:
       insertIndex: 3
       addedObject: {fileID: 1459310922}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
---- !u!1001 &83217980
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1652484691}
-    m_Modifications:
-    - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_SortingLayer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -1115572491
-      objectReference: {fileID: 0}
-    - target: {fileID: 5335052447586371707, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_Size.x
-      value: 0.67
-      objectReference: {fileID: 0}
-    - target: {fileID: 5335052447586371707, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_Offset.y
-      value: -0.11
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 41.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 6.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.99999994
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.0004717966
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -360.054
-      objectReference: {fileID: 0}
-    - target: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      propertyPath: m_Name
-      value: Slime (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 11386309414839839, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: 3
-      addedObject: {fileID: 1579986037}
-  m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &120275787
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +259,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &120275789
@@ -429,6 +355,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &144519018
@@ -570,8 +499,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -593,7 +520,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 5
   m_SortingOrder: 0
@@ -620,6 +546,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!50 &168085065
@@ -961,6 +890,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &258785270
@@ -1176,6 +1108,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &374026566
@@ -1345,6 +1280,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &492059869 stripped
@@ -1369,6 +1307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &506796748
@@ -1446,8 +1387,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1469,7 +1408,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -1548,6 +1486,7 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
+  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -1555,7 +1494,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
-  m_Version: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -1690,8 +1628,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1713,7 +1649,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -783347025
   m_SortingLayer: 4
   m_SortingOrder: 0
@@ -7135,6 +7070,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &536547382
@@ -7228,6 +7166,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &587080069
@@ -7366,6 +7307,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &596688725
@@ -7692,6 +7636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!4 &760086613 stripped
@@ -7721,6 +7668,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &771354698
@@ -7776,8 +7726,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -7799,7 +7747,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 2
   m_SortingOrder: 0
@@ -7964,8 +7911,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -7987,7 +7932,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -8179,8 +8123,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -8202,7 +8144,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 2
   m_SortingOrder: 0
@@ -8593,6 +8534,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &953995990
@@ -8686,6 +8630,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &960531280
@@ -9550,8 +9497,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9573,7 +9518,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 427561587
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -9799,6 +9743,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1001 &1030408790
@@ -9907,6 +9854,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &1235854461 stripped
@@ -9931,6 +9881,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1001 &1246333287
@@ -10077,8 +10030,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -10100,7 +10051,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -10254,6 +10204,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &1280735426
@@ -10347,6 +10300,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &1289409047
@@ -10518,8 +10474,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -10541,7 +10495,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -10578,6 +10531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &1406019641
@@ -10655,8 +10611,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -10678,7 +10632,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -10799,6 +10752,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &1459310918 stripped
@@ -10818,6 +10774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!4 &1459310925 stripped
@@ -10858,30 +10817,6 @@ Transform:
   - {fileID: 1779946403}
   m_Father: {fileID: 76860845}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1579986032 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-  m_PrefabInstance: {fileID: 83217980}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1579986033 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6089079907871956189, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-  m_PrefabInstance: {fileID: 83217980}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1579986037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579986032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  health: 1
 --- !u!1 &1591917312
 GameObject:
   m_ObjectHideFlags: 0
@@ -10912,6 +10847,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &1591917314
@@ -11033,6 +10971,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &1652484690
@@ -11065,7 +11006,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1459310925}
-  - {fileID: 1579986033}
   - {fileID: 1036512146}
   - {fileID: 1002590084}
   - {fileID: 1371265376}
@@ -11109,6 +11049,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &1669435950
@@ -11228,8 +11171,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -11251,7 +11192,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -14947,6 +14887,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &1772410058
@@ -15153,6 +15096,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedX: 3
+  limitRight: 3
+  limitLeft: 3
   animator: {fileID: 0}
   health: 1
 --- !u!1 &1906429872
@@ -15230,8 +15176,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -15253,7 +15197,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -15298,6 +15241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &2062314061
@@ -15429,6 +15375,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8251f12b3a89a79428fcdb5adec2fa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  speedX: 0
+  limitRight: 0
+  limitLeft: 0
   animator: {fileID: 0}
   health: 1
 --- !u!61 &2122091214
