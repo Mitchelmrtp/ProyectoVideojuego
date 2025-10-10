@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 6fe7a79c589b99946a7d41d06dcb4046
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 147464970025545937
+    second: portal_morado_sf_0
+  - first:
+      213: -405898079204056062
+    second: portal_morado_sf_1
+  - first:
+      213: -3735138012320979892
+    second: portal_morado_sf_2
+  - first:
+      213: 8443152426472906863
+    second: portal_morado_sf_3
+  - first:
+      213: 231001071777915502
+    second: portal_morado_sf_4
+  - first:
+      213: 797973217422341642
+    second: portal_morado_sf_5
+  - first:
+      213: -7175954955820485840
+    second: portal_morado_sf_6
+  - first:
+      213: -5886617625491605532
+    second: portal_morado_sf_7
+  - first:
+      213: 1284999417077967296
+    second: portal_morado_sf_8
+  - first:
+      213: -4385379009886315031
+    second: portal_morado_sf_9
+  - first:
+      213: 4503804241994321467
+    second: portal_morado_sf_10
+  - first:
+      213: -1312720616294265696
+    second: portal_morado_sf_11
+  - first:
+      213: 1781516186491361298
+    second: portal_morado_sf_12
+  - first:
+      213: 5828583405808116812
+    second: portal_morado_sf_13
+  - first:
+      213: -951378202607879042
+    second: portal_morado_sf_14
+  - first:
+      213: 6471970850296134593
+    second: portal_morado_sf_15
+  - first:
+      213: 4680780657415576837
+    second: portal_morado_sf_16
+  - first:
+      213: -7648605803588819409
+    second: portal_morado_sf_17
+  - first:
+      213: 6461447326688695843
+    second: portal_morado_sf_18
+  - first:
+      213: -7663809002935476773
+    second: portal_morado_sf_19
+  - first:
+      213: -726501459668427689
+    second: portal_morado_sf_20
+  - first:
+      213: 8604388408287042010
+    second: portal_morado_sf_21
+  - first:
+      213: -2007990431438091206
+    second: portal_morado_sf_22
+  - first:
+      213: 2616567994429328615
+    second: portal_morado_sf_23
+  - first:
+      213: -5067119619342052450
+    second: portal_morado_sf_24
+  - first:
+      213: -7937149609812361369
+    second: portal_morado_sf_25
+  - first:
+      213: 2744579835502587016
+    second: portal_morado_sf_26
+  - first:
+      213: -1029154873174925604
+    second: portal_morado_sf_27
+  - first:
+      213: -370410738052886536
+    second: portal_morado_sf_28
+  - first:
+      213: 6636924967159855128
+    second: portal_morado_sf_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: portal_morado_sf_1
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 101
+        width: 150
+        height: 191
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2046706f8d5fd5af0800000000000000
+      internalID: -405898079204056062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portal_morado_sf_7
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 99
+        width: 155
+        height: 194
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e7f40055788e4ea0800000000000000
+      internalID: -5886617625491605532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portal_morado_sf_24
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 176
+        width: 88
+        height: 115
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9354be8d89fda9b0800000000000000
+      internalID: -5067119619342052450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: portal_morado_sf_26
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 177
+        width: 83
+        height: 116
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88ce4d8a1d4b61620800000000000000
+      internalID: 2744579835502587016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5335d8b4de4620343a01640373fcfd88
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      portal_morado_sf_0: 147464970025545937
+      portal_morado_sf_1: -405898079204056062
+      portal_morado_sf_10: 4503804241994321467
+      portal_morado_sf_11: -1312720616294265696
+      portal_morado_sf_12: 1781516186491361298
+      portal_morado_sf_13: 5828583405808116812
+      portal_morado_sf_14: -951378202607879042
+      portal_morado_sf_15: 6471970850296134593
+      portal_morado_sf_16: 4680780657415576837
+      portal_morado_sf_17: -7648605803588819409
+      portal_morado_sf_18: 6461447326688695843
+      portal_morado_sf_19: -7663809002935476773
+      portal_morado_sf_2: -3735138012320979892
+      portal_morado_sf_20: -726501459668427689
+      portal_morado_sf_21: 8604388408287042010
+      portal_morado_sf_22: -2007990431438091206
+      portal_morado_sf_23: 2616567994429328615
+      portal_morado_sf_24: -5067119619342052450
+      portal_morado_sf_25: -7937149609812361369
+      portal_morado_sf_26: 2744579835502587016
+      portal_morado_sf_27: -1029154873174925604
+      portal_morado_sf_28: -370410738052886536
+      portal_morado_sf_29: 6636924967159855128
+      portal_morado_sf_3: 8443152426472906863
+      portal_morado_sf_4: 231001071777915502
+      portal_morado_sf_5: 797973217422341642
+      portal_morado_sf_6: -7175954955820485840
+      portal_morado_sf_7: -5886617625491605532
+      portal_morado_sf_8: 1284999417077967296
+      portal_morado_sf_9: -4385379009886315031
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

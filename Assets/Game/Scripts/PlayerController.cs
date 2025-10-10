@@ -106,4 +106,16 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
+
+    public void RestaurarGravedad()
+    {
+        // Restaurar la gravedad normal
+        isGravedadInvertida = false;
+
+        // Restaurar la rotación del personaje a su estado normal
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        // Ajustamos la gravedad global a su valor normal
+        body.gravityScale = 1;  // Vuelve la gravedad a la normal
+    }
 }
