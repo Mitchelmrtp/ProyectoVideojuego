@@ -27,6 +27,7 @@ public class PlayerController2 : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     bool canMove = true;
+    private bool isAttacking = false; // Para saber si el jugador está atacando
     private bool isGravedadInvertida = false; // Para saber si la gravedad está invertida
     private InputAction jumpAction;
     private InputAction testGravityAction; // Para testing con tecla G
@@ -202,6 +203,7 @@ public class PlayerController2 : MonoBehaviour
     public void SwordAttack()
     {
         LockMovement();
+        isAttacking = true; // Marcar que está atacando
         
         // Asegurar que el personaje esté completamente detenido durante el ataque
         rb.linearVelocity = Vector2.zero;
@@ -220,6 +222,7 @@ public class PlayerController2 : MonoBehaviour
     public void EndSwordAttack()
     {
         UnlockMovement();
+        isAttacking = false; // Desmarcar que está atacando
         swordAttack.StopAttack();
     }
 
@@ -240,8 +243,17 @@ public class PlayerController2 : MonoBehaviour
         }
         else if (collision.CompareTag("Enemy"))
         {
-            Debug.Log("Tocaste un enemigo - Muriendo");
-            PlayerDeath();
+            if (isAttacking)
+            {
+                Debug.Log("Tocaste un enemigo mientras atacas - El enemigo debería morir, no tú");
+                // Aquí podrías agregar lógica para matar al enemigo
+                // Por ejemplo: collision.GetComponent<Enemy>().Die();
+            }
+            else
+            {
+                Debug.Log("Tocaste un enemigo - Muriendo");
+                PlayerDeath();
+            }
         }
         else
         {
@@ -255,8 +267,17 @@ public class PlayerController2 : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Colisionaste con un enemigo - Muriendo");
-            PlayerDeath();
+            if (isAttacking)
+            {
+                Debug.Log("Colisionaste con un enemigo mientras atacas - El enemigo debería morir, no tú");
+                // Aquí podrías agregar lógica para matar al enemigo
+                // Por ejemplo: collision.GetComponent<Enemy>().Die();
+            }
+            else
+            {
+                Debug.Log("Colisionaste con un enemigo - Muriendo");
+                PlayerDeath();
+            }
         }
     }
 
