@@ -43,7 +43,7 @@ public class PlayerController2 : MonoBehaviour
         jumpAction = InputSystem.actions.FindAction("Jump");
         
         // Crear action para test de gravedad (tecla G)
-        testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Keyboard>/g");
+        testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
         testGravityAction.Enable();
         
         // Verificar configuración inicial
