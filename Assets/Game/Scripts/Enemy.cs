@@ -13,23 +13,33 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D body;
     private SpriteRenderer sprite;
     private Vector3 originalPosition;
+    private Collider2D enemyCollider;
 
     public Animator animator;
 
+    public float health = 1f;
 
     private void Awake()
-        {
-            Vector3 pos = transform.localPosition;
-            originalPosition = pos;
-            limits = new Vector2(pos.x - limitLeft, pos.x + limitRight);
+    {
+        Vector3 pos = transform.localPosition;
+        originalPosition = pos;
+        limits = new Vector2(pos.x - limitLeft, pos.x + limitRight);
 
-            body = GetComponent<Rigidbody2D>();
-            sprite = GetComponent<SpriteRenderer>();
-            direction = 1; // Hacia la derecha
-        }
+        body = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
+        enemyCollider = GetComponent<Collider2D>();
+
+        direction = 1; // Hacia la derecha
+    }
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     public float Health
     {
+        get { return health; }
         set
         {
             health = value;
@@ -38,24 +48,22 @@ public class Enemy : MonoBehaviour
                 Defeated();
             }
         }
-
-        get
-        {
-            return health;
-        }
     }
-
-    public float health = 1f;
-
-    private void Start()
-    {
-        animator = GetComponent<Animator>();
-    }
-
 
     public void Defeated()
     {
         animator.SetTrigger("Defeated");
+
+        // Desactivar collider para evitar más colisiones
+        if (enemyCollider != null)
+            enemyCollider.enabled = false;
+
+        // Detener simulación física para evitar empujones o impulsos
+        if (body != null)
+            body.simulated = false;
+
+        // Destruir enemigo después de 1 segundo (ajusta según duración animación)
+        Invoke(nameof(RemoveEnemy), 1f);
     }
 
     public void RemoveEnemy()
@@ -63,24 +71,29 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void Update()   
+    private void Update()
     {
         if (direction != 0)
         {
-            sprite.flipX = direction < 0 ? true : false;
+            sprite.flipX = direction < 0;
         }
         Vector3 pos = transform.localPosition;
         if (pos.x <= limits.x)
         {
-            // Si el enemigo intenta ir hacia la izquierda más allá de lo posible cambiamos de dirección
             direction = 1;
         }
         if (pos.x >= limits.y)
         {
-            // Si el enemigo intenta ir hacia la derecha más allá de lo posible cambiamos de dirección
             direction = -1;
         }
-        body.linearVelocityX = direction * speedX;
+
+        // Corregir la asignación de velocidad
+        if (body != null && body.simulated)
+        {
+            Vector2 velocity = body.linearVelocity;
+            velocity.x = direction * speedX;
+            body.linearVelocity = velocity;
+        }
     }
 
     private void OnDrawGizmos()
@@ -91,5 +104,4 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawSphere(posLeft, 0.5f);
         Gizmos.DrawSphere(posRight, 0.5f);
     }
-
 }

@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Ground
   - ZonaGravedad
+  - Diamante
   layers:
   - Default
   - TransparentFX

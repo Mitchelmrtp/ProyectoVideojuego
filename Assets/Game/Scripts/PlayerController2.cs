@@ -17,6 +17,10 @@ public class PlayerController2 : MonoBehaviour
     [SerializeField] private float sizeDetector = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Límite de cambios de gravedad")]
+    [SerializeField] private int maxGravityChanges = 2; // 🔹 Número máximo de veces que se puede cambiar la gravedad
+    private int currentGravityChanges = 0;              // 🔹 Contador actual de cambios
+
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
     Rigidbody2D rb;
@@ -27,14 +31,13 @@ public class PlayerController2 : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     bool canMove = true;
-    private bool isAttacking = false; // Para saber si el jugador está atacando
-    private bool isGravedadInvertida = false; // Para saber si la gravedad está invertida
+    private bool isAttacking = false; 
+    private bool isGravedadInvertida = false; 
     private InputAction jumpAction;
-    private InputAction testGravityAction; // Para testing con tecla G
+    private InputAction testGravityAction; 
 
     public SwordAttack swordAttack;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -42,14 +45,12 @@ public class PlayerController2 : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         jumpAction = InputSystem.actions.FindAction("Jump");
         
-        // Crear action para test de gravedad (tecla G)
+        // Crear action para test de gravedad (click derecho)
         testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
         testGravityAction.Enable();
         
-        // Verificar configuración inicial
         Debug.Log($"PlayerController2 iniciado. GravityScale inicial: {rb.gravityScale}");
         
-        // Verificar que el personaje tenga un Collider2D configurado como Trigger
         Collider2D[] colliders = GetComponents<Collider2D>();
         bool hasTrigger = false;
         foreach (var col in colliders)
@@ -71,80 +72,69 @@ public class PlayerController2 : MonoBehaviour
         }
     }
 
-
     private void FixedUpdate()
     {
         if (canMove)
         {
-            // Solo movimiento horizontal para juego de plataformas
             float horizontalInput = movementInput.x;
             
             if (horizontalInput != 0)
             {
-                // Movimiento horizontal usando velocity
                 rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
                 animator.SetBool("isMoving", true);
             }
             else
             {
-                // Detener movimiento horizontal
                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
                 animator.SetBool("isMoving", false);
             }
 
-            // Corregir la dirección del sprite según el estado de la gravedad
             if (horizontalInput < 0)
             {
-                // Cuando la gravedad está invertida, invertimos la lógica del flipX
                 spriteRenderer.flipX = isGravedadInvertida ? false : true;
             }
             else if (horizontalInput > 0)
             {
-                // Cuando la gravedad está invertida, invertimos la lógica del flipX
                 spriteRenderer.flipX = isGravedadInvertida ? true : false;
             }
         }
         else
         {
-            // Si no puede moverse (durante ataque), asegurar que esté detenido horizontalmente
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             animator.SetBool("isMoving", false);
         }
 
-        // Manejo de la gravedad
-        if (isGravedadInvertida)
-        {
-            rb.gravityScale = -1;  // Cambiar la gravedad al modo invertido
-        }
-        else
-        {
-            rb.gravityScale = 1;  // Normalizar la gravedad
-        }
+        rb.gravityScale = isGravedadInvertida ? -1 : 1;
     }
 
     private void Update()
     {
-        // Detectamos si estamos en el piso para poder saltar
         if (detector != null)
         {
             Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
-            bool canJump = colision != null;  // Si podemos saltar (estamos en el piso o techo)
+            bool canJump = colision != null;
 
-            // Salto
             if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
             {
                 Debug.Log("El personaje debe saltar...");
-                // Si la gravedad está invertida, saltamos en dirección opuesta
                 float jumpDirection = isGravedadInvertida ? -jumpImpulse : jumpImpulse;
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
             }
         }
-        
-        // TEST: Presiona G para cambiar gravedad manualmente (solo para debug)
+
+        // 🔹 Control de límite para cambio de gravedad manual
         if (testGravityAction.WasPressedThisFrame())
         {
-            Debug.Log("Tecla G presionada - Cambiando gravedad manualmente");
-            CambiarGravedad();
+            if (currentGravityChanges < maxGravityChanges)
+            {
+                Debug.Log($"Click derecho presionado - Cambio de gravedad #{currentGravityChanges + 1}");
+                CambiarGravedad();
+                currentGravityChanges++;
+            }
+            else
+            {
+                Debug.Log($"❌ Límite de cambios de gravedad alcanzado ({maxGravityChanges}). No se puede cambiar más.");
+            }
         }
     }
 
@@ -153,10 +143,10 @@ public class PlayerController2 : MonoBehaviour
         if (direction != Vector2.zero)
         {
             int count = rb.Cast(
-               movementInput, // X and Y values between -1 and 1 that represent the direction from the body to look for collisions
-               movementFilter, // The settings that determine where a collision can occur on such as layers to collide with
-               castCollisions, // List of collisions to store the found collisions into after the Cast is finished
-               moveSpeed * Time.fixedDeltaTime + collisionOffset); // The amount to cast equal to the movement plus an offset
+               movementInput,
+               movementFilter,
+               castCollisions,
+               moveSpeed * Time.fixedDeltaTime + collisionOffset);
 
             if (count == 0)
             {
@@ -170,16 +160,14 @@ public class PlayerController2 : MonoBehaviour
         }
         else
         {
-            //can't move if there's no direction to move in
             return false;
         }
     }
 
     void OnMove(InputValue movementValue)
     {
-        // Solo tomamos el input horizontal para movimiento de plataformas
         Vector2 fullInput = movementValue.Get<Vector2>();
-        movementInput = new Vector2(fullInput.x, 0); // Solo componente X
+        movementInput = new Vector2(fullInput.x, 0);
     }
 
     void OnFire()
@@ -191,7 +179,6 @@ public class PlayerController2 : MonoBehaviour
     public void LockMovement()
     {
         canMove = false;
-        // Detener el movimiento horizontal durante el ataque
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
     }
 
@@ -203,9 +190,7 @@ public class PlayerController2 : MonoBehaviour
     public void SwordAttack()
     {
         LockMovement();
-        isAttacking = true; // Marcar que está atacando
-        
-        // Asegurar que el personaje esté completamente detenido durante el ataque
+        isAttacking = true;
         rb.linearVelocity = Vector2.zero;
 
         if (spriteRenderer.flipX == true)
@@ -216,13 +201,12 @@ public class PlayerController2 : MonoBehaviour
         {
             swordAttack.AttackRight();
         }
-        
     }
 
     public void EndSwordAttack()
     {
         UnlockMovement();
-        isAttacking = false; // Desmarcar que está atacando
+        isAttacking = false;
         swordAttack.StopAttack();
     }
 
@@ -238,7 +222,6 @@ public class PlayerController2 : MonoBehaviour
         else if (collision.CompareTag("ZonaGravedad"))
         {
             Debug.Log("Entrando en ZonaGravedad - Cambiando gravedad");
-            // Cambiar la gravedad e invertir la lógica de flip
             CambiarGravedad();
         }
         else if (collision.CompareTag("Enemy"))
@@ -246,14 +229,20 @@ public class PlayerController2 : MonoBehaviour
             if (isAttacking)
             {
                 Debug.Log("Tocaste un enemigo mientras atacas - El enemigo debería morir, no tú");
-                // Aquí podrías agregar lógica para matar al enemigo
-                // Por ejemplo: collision.GetComponent<Enemy>().Die();
             }
             else
             {
                 Debug.Log("Tocaste un enemigo - Muriendo");
                 PlayerDeath();
             }
+        }
+        // 🔹 NUEVO: Detectar diamante y aumentar límite de gravedad
+        else if (collision.CompareTag("Diamante"))
+        {
+            Debug.Log("💎 ¡Diamante recogido! Aumentando capacidad de cambio de gravedad +1");
+            maxGravityChanges += 1;
+            Destroy(collision.gameObject); // Desaparecer el diamante
+            Debug.Log($"Nuevo límite de gravedad: {maxGravityChanges}");
         }
         else
         {
@@ -270,8 +259,6 @@ public class PlayerController2 : MonoBehaviour
             if (isAttacking)
             {
                 Debug.Log("Colisionaste con un enemigo mientras atacas - El enemigo debería morir, no tú");
-                // Aquí podrías agregar lógica para matar al enemigo
-                // Por ejemplo: collision.GetComponent<Enemy>().Die();
             }
             else
             {
@@ -285,42 +272,34 @@ public class PlayerController2 : MonoBehaviour
     {
         Debug.Log("¡Jugador ha muerto! Respawneando...");
         
-        // Detener el movimiento
         rb.linearVelocity = Vector2.zero;
         
-        // Buscar el punto de spawn
         GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
         if (spawn != null)
         {
-            // Resetear posición
             transform.localPosition = spawn.transform.localPosition;
-            
-            // Resetear rotación (en caso de que estuviera con gravedad invertida)
             transform.rotation = Quaternion.Euler(0, 0, 0);
-            
-            // Resetear gravedad a normal
             isGravedadInvertida = false;
             rb.gravityScale = 1;
-            
-            // Resetear sprite flip
             spriteRenderer.flipX = false;
-            
+
             Debug.Log($"Jugador respawneado en: {spawn.transform.localPosition}");
         }
         else
         {
             Debug.LogError("No se encontró ningún SpawnPoint con tag 'SpawnPoint'");
-            // Como fallback, resetear posición a origen
             transform.localPosition = Vector3.zero;
         }
-        
-        // Asegurar que el jugador pueda moverse después del respawn
+
+        // 🔹 Reiniciar contador de cambios de gravedad
+        currentGravityChanges = 0;
+        Debug.Log("Contador de cambios de gravedad reiniciado tras morir.");
+
         UnlockMovement();
     }
 
     public void CambiarGravedad()
     {
-        // Activamos o desactivamos la gravedad invertida
         isGravedadInvertida = !isGravedadInvertida;
         
         Debug.Log($"=== CAMBIO DE GRAVEDAD ===");
@@ -328,17 +307,14 @@ public class PlayerController2 : MonoBehaviour
         Debug.Log($"Rotation antes: {transform.rotation.eulerAngles}");
         Debug.Log($"GravityScale antes: {rb.gravityScale}");
         
-        // Rotamos el personaje según el estado de la gravedad
         if (isGravedadInvertida)
         {
-            // Gravedad invertida: rotar 180 grados
             transform.rotation = Quaternion.Euler(0, 0, 180);
             rb.gravityScale = -1;
             Debug.Log("Aplicando gravedad invertida");
         }
         else
         {
-            // Gravedad normal: sin rotación
             transform.rotation = Quaternion.Euler(0, 0, 0);
             rb.gravityScale = 1;
             Debug.Log("Aplicando gravedad normal");
@@ -348,21 +324,18 @@ public class PlayerController2 : MonoBehaviour
         Debug.Log($"GravityScale después: {rb.gravityScale}");
         Debug.Log("========================");
         
-        // Resetear la velocidad Y para evitar comportamientos extraños en la transición
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
     }
     
     private void OnDestroy()
     {
-        // Limpiar la InputAction cuando se destruya el objeto
         if (testGravityAction != null)
         {
             testGravityAction.Disable();
             testGravityAction.Dispose();
         }
     }
-    
-    // Método para testear la gravedad manualmente (puedes llamarlo desde el inspector o con una tecla)
+
     [System.Obsolete("Solo para testing")]
     public void TestCambiarGravedad()
     {
@@ -370,7 +343,6 @@ public class PlayerController2 : MonoBehaviour
         CambiarGravedad();
     }
 
-    // Método para visualizar el detector en el editor
     private void OnDrawGizmosSelected()
     {
         if (detector != null)
