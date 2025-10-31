@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Enemy : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class Enemy : MonoBehaviour
     public Animator animator;
 
     public float health = 1f;
+    private string enemyId;
 
     private void Awake()
     {
@@ -30,6 +32,17 @@ public class Enemy : MonoBehaviour
         enemyCollider = GetComponent<Collider2D>();
 
         direction = 1; // Hacia la derecha
+
+        // Generate a stable id for this enemy based on scene and position
+        string sceneName = SceneManager.GetActiveScene().name;
+        Vector3 worldPos = transform.position;
+        // Round position to reduce floating point differences
+        string posKey = string.Format("{0}_{1}_{2}", Mathf.Round(worldPos.x * 100f)/100f, Mathf.Round(worldPos.y * 100f)/100f, Mathf.Round(worldPos.z * 100f)/100f);
+        string baseName = gameObject.name.Replace("(Clone)", "").Trim();
+        enemyId = $"{sceneName}|{baseName}|{posKey}";
+
+        // Register this enemy instance so EnemyManager can respawn it later
+        EnemyManager.RegisterEnemy(enemyId, this);
     }
 
     private void Start()
@@ -62,14 +75,43 @@ public class Enemy : MonoBehaviour
         if (body != null)
             body.simulated = false;
 
-        // Destruir enemigo después de 1 segundo (ajusta según duración animación)
-        Invoke(nameof(RemoveEnemy), 1f);
+
+        // Desactivar el enemigo después de la animación (fallback 1s)
+        Invoke(nameof(DeactivateEnemy), 1f);
     }
 
     public void RemoveEnemy()
     {
-        Destroy(gameObject);
+        // This method is no longer needed, as we deactivate instead of destroy
     }
+
+    public void DeactivateEnemy()
+    {
+        // Desactivar el GameObject en lugar de destruirlo para poder respawnearlo
+        gameObject.SetActive(false);
+    }
+
+    public void Respawn()
+    {
+        // Reactivar y resetear el enemigo a su estado inicial
+        gameObject.SetActive(true);
+        transform.localPosition = originalPosition;
+        if (body != null)
+        {
+            body.simulated = true;
+            body.linearVelocity = Vector2.zero;
+        }
+        if (enemyCollider != null) enemyCollider.enabled = true;
+        health = 1f; // or initial health if stored elsewhere
+        direction = 1;
+        // Reset animator
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
+    }
+    
 
     private void Update()
     {

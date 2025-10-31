@@ -29,6 +29,8 @@ public class PlayerController2 : MonoBehaviour
 
     Animator animator;
     SpriteRenderer spriteRenderer;
+    [Header("Debug")]
+    public bool debugDirectAttack = false; // Si se activa, OnFire() llamará directamente a SwordAttack() para probar
 
     bool canMove = true;
     private bool isAttacking = false; 
@@ -37,6 +39,24 @@ public class PlayerController2 : MonoBehaviour
     private InputAction testGravityAction; 
 
     public SwordAttack swordAttack;
+    [Header("Attack Settings")]
+    [Tooltip("Duración por defecto del ataque (segundos). Usado como fallback si el Animation Event EndSwordAttack no se ejecuta).")]
+    public float attackDuration = 0.4f;
+    private Coroutine attackCoroutine = null;
+    
+    [Header("Health")]
+    public int maxHealth = 3;
+    private int currentHealth;
+    private Coroutine deathCoroutine = null;
+    [Header("Timing")]
+    [Tooltip("Duración por defecto de la animación de muerte (segundos). Si la animación tiene un Animation Event EndDeath, se cancelará la espera).")]
+    public float deathDuration = 1.0f;
+    [Tooltip("Duración por defecto del hit (segundos). Usado como fallback si la animación de daño no llama a EndHurt().")]
+    public float hitDuration = 0.5f;
+    private Coroutine hitCoroutine = null;
+    [Header("Respawn")]
+    [Tooltip("Si está activado, al morir el jugador se limpiará la lista de enemigos derrotados para que reaparezcan.")]
+    public bool respawnEnemiesOnPlayerDeath = true;
 
     void Start()
     {
@@ -70,6 +90,9 @@ public class PlayerController2 : MonoBehaviour
         {
             Debug.Log("Collider2D Trigger encontrado. Los portales deberían funcionar.");
         }
+
+        // Inicializar vida
+        currentHealth = maxHealth;
     }
 
     private void FixedUpdate()
@@ -119,6 +142,19 @@ public class PlayerController2 : MonoBehaviour
                 Debug.Log("El personaje debe saltar...");
                 float jumpDirection = isGravedadInvertida ? -jumpImpulse : jumpImpulse;
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
+            }
+
+            // Actualizar parámetros del animator relacionados con salto/grounded
+            if (animator != null)
+            {
+                if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isJumping", !canJump && rb.linearVelocity.y > 0f);
+                if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isFalling", !canJump && rb.linearVelocity.y < 0f);
+                if (HasAnimatorParameter("isGrounded", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isGrounded", canJump);
+                if (HasAnimatorParameter("verticalVel", AnimatorControllerParameterType.Float))
+                    animator.SetFloat("verticalVel", rb.linearVelocity.y);
             }
         }
 
@@ -172,8 +208,34 @@ public class PlayerController2 : MonoBehaviour
 
     void OnFire()
     {
-        animator.SetTrigger("isAttacking");
-        Debug.Log("Attacked");
+        // Evitar iniciar otro ataque mientras ya se está atacando
+        if (isAttacking)
+        {
+            Debug.Log("OnFire: ya se está atacando, ignorando input.");
+            return;
+        }
+
+        if (animator == null)
+        {
+            Debug.LogError("OnFire: animator es null");
+        }
+        else
+        {
+            // Log corto de animator para diagnóstico
+            var pars = animator.parameters;
+            string pNames = "";
+            foreach (var p in pars)
+            {
+                pNames += p.name + "(" + p.type + ") ";
+            }
+            Debug.Log($"Animator: {animator.runtimeAnimatorController?.name ?? "(null controller)"}. Parámetros: {pNames}");
+                if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Trigger))
+                    animator.SetTrigger("isAttacking");
+            Debug.Log("Attacked");
+        }
+
+        // Llamamos directamente al método de ataque al recibir el input (click izquierdo)
+        SwordAttack();
     }
 
     public void LockMovement()
@@ -189,9 +251,22 @@ public class PlayerController2 : MonoBehaviour
 
     public void SwordAttack()
     {
+        // Protección: si ya estamos atacando no volvemos a ejecutar
+        if (isAttacking)
+        {
+            Debug.Log("SwordAttack(): ya está atacando, salida temprana.");
+            return;
+        }
+
         LockMovement();
         isAttacking = true;
         rb.linearVelocity = Vector2.zero;
+
+        if (swordAttack == null)
+        {
+            Debug.LogError("SwordAttack(): referencia 'swordAttack' no asignada en el inspector.");
+            return;
+        }
 
         if (spriteRenderer.flipX == true)
         {
@@ -201,6 +276,13 @@ public class PlayerController2 : MonoBehaviour
         {
             swordAttack.AttackRight();
         }
+
+        // Iniciar corrutina de seguridad para asegurar que el ataque termina aunque el Animation Event no se dispare
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+        }
+        attackCoroutine = StartCoroutine(AttackTimeoutCoroutine(attackDuration));
     }
 
     public void EndSwordAttack()
@@ -208,6 +290,24 @@ public class PlayerController2 : MonoBehaviour
         UnlockMovement();
         isAttacking = false;
         swordAttack.StopAttack();
+        // Detener corrutina si sigue activa
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+    }
+
+    private IEnumerator AttackTimeoutCoroutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        // Si al terminar el timeout todavía estamos atacando, forzamos el fin del ataque
+        if (isAttacking)
+        {
+            Debug.Log("AttackTimeoutCoroutine: tiempo de ataque expirado; llamando a EndSwordAttack() como fallback.");
+            EndSwordAttack();
+        }
+        attackCoroutine = null;
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -232,8 +332,8 @@ public class PlayerController2 : MonoBehaviour
             }
             else
             {
-                Debug.Log("Tocaste un enemigo - Muriendo");
-                PlayerDeath();
+                Debug.Log("Tocaste un enemigo - Recibiendo daño");
+                TakeDamage(1);
             }
         }
         // 🔹 NUEVO: Detectar diamante y aumentar límite de gravedad
@@ -262,15 +362,128 @@ public class PlayerController2 : MonoBehaviour
             }
             else
             {
-                Debug.Log("Colisionaste con un enemigo - Muriendo");
-                PlayerDeath();
+                Debug.Log("Colisionaste con un enemigo - Recibiendo daño");
+                TakeDamage(1);
             }
         }
+    }
+
+    public void TakeDamage(int amount)
+    {
+        if (currentHealth <= 0)
+            return;
+
+        currentHealth -= amount;
+        Debug.Log($"Player: TakeDamage({amount}). Vida restante: {currentHealth}");
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            // Reproducir animación de daño/hit si existe el parámetro
+            if (animator != null)
+            {
+                if (HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
+                    animator.SetTrigger("Hit");
+                if (HasAnimatorParameter("isHurt", AnimatorControllerParameterType.Trigger))
+                    animator.SetTrigger("isHurt");
+            }
+            LockMovement();
+
+            // Iniciar fallback: si la animación de hit no llama a EndHurt(), desbloqueamos después de hitDuration
+            if (hitCoroutine != null)
+                StopCoroutine(hitCoroutine);
+            hitCoroutine = StartCoroutine(HitTimeoutCoroutine(hitDuration));
+        }
+    }
+
+    public void EndHurt()
+    {
+        // Llamado desde animación al terminar el hit
+        // Detener corrutina de fallback si existe
+        if (hitCoroutine != null)
+        {
+            StopCoroutine(hitCoroutine);
+            hitCoroutine = null;
+        }
+        UnlockMovement();
+    }
+
+    private IEnumerator HitTimeoutCoroutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        hitCoroutine = null;
+        Debug.Log("HitTimeoutCoroutine: tiempo de hit expirado; llamando a EndHurt() como fallback.");
+        EndHurt();
+    }
+
+    public void Die()
+    {
+        Debug.Log("Player: Die() invocado");
+        if (animator != null)
+        {
+            if (HasAnimatorParameter("Death", AnimatorControllerParameterType.Trigger))
+                animator.SetTrigger("Death");
+            if (HasAnimatorParameter("isDead", AnimatorControllerParameterType.Trigger))
+                animator.SetTrigger("isDead");
+        }
+        LockMovement();
+        // Iniciar fallback: si la animación no tiene un Animation Event EndDeath, respawnearemos tras deathDuration
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+        }
+        deathCoroutine = StartCoroutine(DeathCoroutine(deathDuration));
+    }
+
+    public void EndDeath()
+    {
+        // Llamado desde animación de muerte cuando quieras respawnear
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+            deathCoroutine = null;
+        }
+        PlayerDeath();
+    }
+
+    // Helper: comprobar si el Animator tiene un parámetro con nombre y tipo dados
+    private bool HasAnimatorParameter(string name, UnityEngine.AnimatorControllerParameterType type)
+    {
+        if (animator == null) return false;
+        foreach (var p in animator.parameters)
+        {
+            if (p.name == name && p.type == type) return true;
+        }
+        return false;
+    }
+
+    private IEnumerator DeathCoroutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        deathCoroutine = null;
+        Debug.Log("DeathCoroutine: tiempo expirado; respawneando al jugador.");
+        PlayerDeath();
     }
 
     public void PlayerDeath()
     {
         Debug.Log("¡Jugador ha muerto! Respawneando...");
+        // Opcional: permitir que los enemigos reaparezcan al respawnear el jugador
+        if (respawnEnemiesOnPlayerDeath)
+        {
+            // Llamar a RespawnAll para reactivar y reiniciar los enemigos registrados
+            EnemyManager.RespawnAll();
+            Debug.Log("EnemyManager: RespawnAll() called because player respawned.");
+        }
+        else
+        {
+            // Si no queremos que reaparezcan, limpiamos el registro
+            EnemyManager.Clear();
+            Debug.Log("EnemyManager: registry cleared (no respawn on player death).");
+        }
         
         rb.linearVelocity = Vector2.zero;
         
@@ -294,6 +507,54 @@ public class PlayerController2 : MonoBehaviour
         // 🔹 Reiniciar contador de cambios de gravedad
         currentGravityChanges = 0;
         Debug.Log("Contador de cambios de gravedad reiniciado tras morir.");
+
+        // Restaurar estado del Animator y variables para que el jugador reaparezca correctamente
+        if (animator != null)
+        {
+            // Cancelar triggers y volver al estado por defecto
+            animator.ResetTrigger("Death");
+            animator.ResetTrigger("isDead");
+            animator.ResetTrigger("Hit");
+            animator.ResetTrigger("isHurt");
+            // Forzar rebind para limpiar estados y variables animadas
+            animator.Rebind();
+            // Intentar reproducir el estado idle si existe
+            try
+            {
+                animator.Play("Player_idle", 0, 0f);
+                animator.Update(0f);
+            }
+            catch {
+                // Si no existe el estado, Rebind ya debería dejarlo en un estado consistente
+            }
+        }
+
+        // Detener corrutinas relacionadas si siguen activas
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+            deathCoroutine = null;
+        }
+        if (hitCoroutine != null)
+        {
+            StopCoroutine(hitCoroutine);
+            hitCoroutine = null;
+        }
+
+        // Reiniciar vida
+        currentHealth = maxHealth;
+
+        // Asegurarse de que el ataque esté desactivado
+        if (swordAttack != null)
+            swordAttack.StopAttack();
+
+        // Reset flags
+        isAttacking = false;
 
         UnlockMovement();
     }

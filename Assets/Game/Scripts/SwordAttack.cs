@@ -19,6 +19,16 @@ public class SwordAttack : MonoBehaviour
         leftAttackOffset = new Vector2(-rightAttackOffset.x, rightAttackOffset.y);
         
         Debug.Log($"SwordAttack iniciado. Posición derecha: {rightAttackOffset}, Posición izquierda: {leftAttackOffset}");
+
+        // Asegurarnos de que el collider esté desactivado al iniciar para evitar detecciones fuera del ataque
+        if (swordCollider == null)
+        {
+            Debug.LogWarning("SwordAttack: swordCollider no está asignado en el inspector.");
+        }
+        else
+        {
+            swordCollider.enabled = false;
+        }
     }
 
    
@@ -27,16 +37,37 @@ public class SwordAttack : MonoBehaviour
     {
         print("attack right");
         Debug.Log("SwordAttack: Ataque derecha - moviendo a posición derecha");
-        swordCollider.enabled = true;
+        if (swordCollider == null)
+        {
+            Debug.LogError("SwordAttack.AttackRight: swordCollider es null. Asigna el collider en el inspector.");
+        }
+        else
+        {
+            swordCollider.enabled = true;
+        }
         transform.localPosition = rightAttackOffset;
     }
 
-    public void AttactLeft()
+    // Método con el nombre correcto
+    public void AttackLeft()
     {
         print("attack left");
         Debug.Log("SwordAttack: Ataque izquierda - moviendo a posición izquierda");
-        swordCollider.enabled = true;
+        if (swordCollider == null)
+        {
+            Debug.LogError("SwordAttack.AttackLeft: swordCollider es null. Asigna el collider en el inspector.");
+        }
+        else
+        {
+            swordCollider.enabled = true;
+        }
         transform.localPosition = leftAttackOffset;
+    }
+
+    // Mantener la versión con typo por compatibilidad con llamadas existentes
+    public void AttactLeft()
+    {
+        AttackLeft();
     }
 
     public void StopAttack()
