@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class PlayerController2 : MonoBehaviour
 {
     [Header("Movimiento")]
     public float moveSpeed = 5f;
     public float collisionOffset = 0.05f;
-    
+
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI txtGravedad; // Texto que mostrará los cambios
+
+
     [Header("Parámetros para salto")]
     [SerializeField] private float jumpImpulse = 10f;
     
@@ -19,7 +24,10 @@ public class PlayerController2 : MonoBehaviour
 
     [Header("Límite de cambios de gravedad")]
     [SerializeField] private int maxGravityChanges = 2; // 🔹 Número máximo de veces que se puede cambiar la gravedad
-    private int currentGravityChanges = 0;              // 🔹 Contador actual de cambios
+              
+    private int baseMaxGravityChanges;              // 🔹 Contador actual de cambios
+    private int gravityChangesAvailable;
+
 
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
@@ -68,9 +76,13 @@ public class PlayerController2 : MonoBehaviour
         // Crear action para test de gravedad (click derecho)
         testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
         testGravityAction.Enable();
-        
-        Debug.Log($"PlayerController2 iniciado. GravityScale inicial: {rb.gravityScale}");
-        
+
+        baseMaxGravityChanges = maxGravityChanges;
+        gravityChangesAvailable = maxGravityChanges;
+        ActualizarTextoGravedad();
+
+        Debug.Log($"PlayerController2 iniciado. Cambios disponibles: {gravityChangesAvailable}/{maxGravityChanges}");
+
         Collider2D[] colliders = GetComponents<Collider2D>();
         bool hasTrigger = false;
         foreach (var col in colliders)
@@ -161,15 +173,16 @@ public class PlayerController2 : MonoBehaviour
         // 🔹 Control de límite para cambio de gravedad manual
         if (testGravityAction.WasPressedThisFrame())
         {
-            if (currentGravityChanges < maxGravityChanges)
+            if (gravityChangesAvailable > 0)
             {
-                Debug.Log($"Click derecho presionado - Cambio de gravedad #{currentGravityChanges + 1}");
                 CambiarGravedad();
-                currentGravityChanges++;
+                gravityChangesAvailable--;
+                Debug.Log($"Cambio de gravedad realizado. Restantes: {gravityChangesAvailable}/{maxGravityChanges}");
+                ActualizarTextoGravedad();
             }
             else
             {
-                Debug.Log($"❌ Límite de cambios de gravedad alcanzado ({maxGravityChanges}). No se puede cambiar más.");
+                Debug.Log("❌ No tienes más cambios de gravedad disponibles.");
             }
         }
     }
@@ -238,6 +251,8 @@ public class PlayerController2 : MonoBehaviour
         SwordAttack();
     }
 
+    
+    
     public void LockMovement()
     {
         canMove = false;
@@ -298,6 +313,15 @@ public class PlayerController2 : MonoBehaviour
         }
     }
 
+    private void ActualizarTextoGravedad()
+    {
+        if (txtGravedad != null)
+        {
+            txtGravedad.text = $"Total de saltos de gravedad: {gravityChangesAvailable}";
+        }
+    }
+
+
     private IEnumerator AttackTimeoutCoroutine(float duration)
     {
         yield return new WaitForSeconds(duration);
@@ -341,8 +365,10 @@ public class PlayerController2 : MonoBehaviour
         {
             Debug.Log("💎 ¡Diamante recogido! Aumentando capacidad de cambio de gravedad +1");
             maxGravityChanges += 1;
-            Destroy(collision.gameObject); // Desaparecer el diamante
-            Debug.Log($"Nuevo límite de gravedad: {maxGravityChanges}");
+            gravityChangesAvailable += 1;
+            Destroy(collision.gameObject);
+            Debug.Log($"Nuevo límite total: {maxGravityChanges}, disponibles: {gravityChangesAvailable}");
+            ActualizarTextoGravedad();
         }
         else
         {
@@ -505,8 +531,10 @@ public class PlayerController2 : MonoBehaviour
         }
 
         // 🔹 Reiniciar contador de cambios de gravedad
-        currentGravityChanges = 0;
-        Debug.Log("Contador de cambios de gravedad reiniciado tras morir.");
+        maxGravityChanges = baseMaxGravityChanges;
+        gravityChangesAvailable = maxGravityChanges;
+
+        Debug.Log($"Contadores de gravedad reiniciados: {gravityChangesAvailable}/{maxGravityChanges}");
 
         // Restaurar estado del Animator y variables para que el jugador reaparezca correctamente
         if (animator != null)
