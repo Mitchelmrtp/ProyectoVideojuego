@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player_idle
+  m_Name: Player_idle_
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,35 +21,37 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -2959952863144521806, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.11666667
       value: {fileID: -7673106977600175179, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.25
+    - time: 0.1
       value: {fileID: 980001253747080783, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.36666667
+    - time: 0.20000002
       value: {fileID: 117530757158716834, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.48333332
+    - time: 0.3
       value: {fileID: -3889822996820118274, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.6
+    - time: 0.4
       value: {fileID: -1476786312400563058, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.73333335
+    - time: 0.5
       value: {fileID: 4843141612697094564, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.85
+    - time: 0.59999996
       value: {fileID: -6798526936261161304, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 0.96666664
+    - time: 0.7
       value: {fileID: 6525064830296999348, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 1.0833334
+    - time: 0.79999995
       value: {fileID: -5222278358021138426, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 1.2166667
+    - time: 0.9
       value: {fileID: 713647246136092332, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
-    - time: 1.3333334
+    - time: 1
       value: {fileID: 3544520840309438896, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
+    - time: 1.1
+      value: {fileID: -5775624033596012759, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
+    - time: 1.19
+      value: {fileID: -5775624033596012759, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
     flags: 2
-  m_SampleRate: 60
+  m_SampleRate: 100
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -66,7 +68,6 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -2959952863144521806, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     - {fileID: -7673106977600175179, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     - {fileID: 980001253747080783, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     - {fileID: 117530757158716834, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
@@ -78,23 +79,25 @@ AnimationClip:
     - {fileID: -5222278358021138426, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     - {fileID: 713647246136092332, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
     - {fileID: 3544520840309438896, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
+    - {fileID: -5775624033596012759, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
+    - {fileID: -5775624033596012759, guid: 1acdd124b9f53d54d9100c6c96afc08f, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.35
+    m_StopTime: 1.2
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
-    m_LoopTime: 1
+    m_LoopTime: 0
     m_LoopBlend: 0
     m_LoopBlendOrientation: 0
     m_LoopBlendPositionY: 0
     m_LoopBlendPositionXZ: 0
     m_KeepOriginalOrientation: 0
-    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionY: 0
     m_KeepOriginalPositionXZ: 0
     m_HeightFromFeet: 0
     m_Mirror: 0
@@ -102,4 +105,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0
+    functionName: 
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

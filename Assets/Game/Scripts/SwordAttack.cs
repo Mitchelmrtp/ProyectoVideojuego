@@ -78,14 +78,14 @@ public class SwordAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Enemy")
+        if (collision.CompareTag("Enemy"))
         {
-            //deal damage with enemy
             Enemy enemy = collision.GetComponent<Enemy>();
 
             if (enemy != null)
             {
-                enemy.Health -= damage;
+                Debug.Log($"SwordAttack: Atacando enemigo {enemy.name}, daño: {damage}");
+                enemy.TakeDamage(damage); // Usar la nueva función que activa animaciones
             }
         }
     }

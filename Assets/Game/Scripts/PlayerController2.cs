@@ -55,6 +55,7 @@ public class PlayerController2 : MonoBehaviour
     [Header("Health")]
     public int maxHealth = 3;
     private int currentHealth;
+    public UnityEngine.Events.UnityEvent<int> cambioVida; // Evento para notificar cambios en la vida
     private Coroutine deathCoroutine = null;
     [Header("Timing")]
     [Tooltip("Duración por defecto de la animación de muerte (segundos). Si la animación tiene un Animation Event EndDeath, se cancelará la espera).")]
@@ -82,6 +83,33 @@ public class PlayerController2 : MonoBehaviour
         ActualizarTextoGravedad();
 
         Debug.Log($"PlayerController2 iniciado. Cambios disponibles: {gravityChangesAvailable}/{maxGravityChanges}");
+        
+        // Verificar parámetros del animador
+        if (animator != null)
+        {
+            bool hasMovementParam = false;
+            
+            if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
+            {
+                Debug.Log("✅ Parámetro 'running' encontrado en el Animator Controller");
+                hasMovementParam = true;
+            }
+            else if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
+            {
+                Debug.Log("✅ Parámetro 'isMoving' encontrado en el Animator Controller");
+                hasMovementParam = true;
+            }
+            
+            if (!hasMovementParam)
+            {
+                Debug.LogWarning("❌ Ni 'running' ni 'isMoving' encontrados en el Animator Controller. La animación de caminar no funcionará.");
+                Debug.LogWarning("💡 Añade un parámetro Bool llamado 'running' o 'isMoving' en tu Animator Controller.");
+            }
+        }
+        else
+        {
+            Debug.LogError("❌ No se encontró componente Animator en el GameObject");
+        }
 
         Collider2D[] colliders = GetComponents<Collider2D>();
         bool hasTrigger = false;
@@ -105,6 +133,7 @@ public class PlayerController2 : MonoBehaviour
 
         // Inicializar vida
         currentHealth = maxHealth;
+        cambioVida.Invoke(currentHealth); // Notificar la vida inicial
     }
 
     private void FixedUpdate()
@@ -113,15 +142,24 @@ public class PlayerController2 : MonoBehaviour
         {
             float horizontalInput = movementInput.x;
             
-            if (horizontalInput != 0)
+            // Aplicar movimiento
+            rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+            
+            // Configurar animación de correr/caminar (basado en DarkMovement)
+            if (animator != null)
             {
-                rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
-                animator.SetBool("isMoving", true);
-            }
-            else
-            {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-                animator.SetBool("isMoving", false);
+                // Intentar primero con "running" (como en el código de referencia)
+                if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
+                {
+                    animator.SetBool("running", horizontalInput != 0.0f);
+                    Debug.Log($"Estableciendo running = {horizontalInput != 0.0f}");
+                }
+                // Si no existe "running", intentar con "isMoving"
+                else if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
+                {
+                    animator.SetBool("isMoving", horizontalInput != 0.0f);
+                    Debug.Log($"Estableciendo isMoving = {horizontalInput != 0.0f}");
+                }
             }
 
             if (horizontalInput < 0)
@@ -136,7 +174,18 @@ public class PlayerController2 : MonoBehaviour
         else
         {
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-            animator.SetBool("isMoving", false);
+            if (animator != null)
+            {
+                // Detener animación de movimiento
+                if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
+                {
+                    animator.SetBool("running", false);
+                }
+                else if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
+                {
+                    animator.SetBool("isMoving", false);
+                }
+            }
         }
 
         rb.gravityScale = isGravedadInvertida ? -1 : 1;
@@ -217,6 +266,7 @@ public class PlayerController2 : MonoBehaviour
     {
         Vector2 fullInput = movementValue.Get<Vector2>();
         movementInput = new Vector2(fullInput.x, 0);
+        Debug.Log($"Input recibido: {fullInput.x}, movementInput: {movementInput.x}");
     }
 
     void OnFire()
@@ -400,6 +450,7 @@ public class PlayerController2 : MonoBehaviour
             return;
 
         currentHealth -= amount;
+        cambioVida.Invoke(currentHealth); // Notificar cambio de vida
         Debug.Log($"Player: TakeDamage({amount}). Vida restante: {currentHealth}");
 
         if (currentHealth <= 0)
@@ -423,6 +474,45 @@ public class PlayerController2 : MonoBehaviour
                 StopCoroutine(hitCoroutine);
             hitCoroutine = StartCoroutine(HitTimeoutCoroutine(hitDuration));
         }
+    }
+
+    // Función para recibir daño (similar a DarkMovement)
+    public void RecibirDaño(int daño)
+    {
+        currentHealth -= daño;
+        cambioVida.Invoke(currentHealth);
+        
+        if (currentHealth <= 0)
+        {
+            if (animator != null)
+            {
+                if (HasAnimatorParameter("Death", AnimatorControllerParameterType.Trigger))
+                    animator.SetTrigger("Death");
+            }
+            Die();
+        }
+        else
+        {
+            if (animator != null)
+            {
+                if (HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
+                    animator.SetTrigger("Hit");
+            }
+        }
+    }
+
+    // Función para curar vida (del código de referencia DarkMovement)
+    public void CurarVida(int cantidadCuracion)
+    {
+        currentHealth = Mathf.Min(currentHealth + cantidadCuracion, maxHealth);
+        cambioVida.Invoke(currentHealth);
+        Debug.Log($"Vida curada: +{cantidadCuracion}. Vida actual: {currentHealth}/{maxHealth}");
+    }
+
+    // Función para verificar si se puede curar (del código de referencia)
+    public bool PuedeCurarse()
+    {
+        return currentHealth < maxHealth; // Retorna true si la vida es menor que el máximo
     }
 
     public void EndHurt()
@@ -576,6 +666,7 @@ public class PlayerController2 : MonoBehaviour
 
         // Reiniciar vida
         currentHealth = maxHealth;
+        cambioVida.Invoke(currentHealth); // Notificar la vida restaurada
 
         // Asegurarse de que el ataque esté desactivado
         if (swordAttack != null)
