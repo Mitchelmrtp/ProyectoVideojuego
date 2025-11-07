@@ -10,6 +10,7 @@ TagManager:
   - Ground
   - ZonaGravedad
   - Diamante
+  - Jefe
   layers:
   - Default
   - TransparentFX
@@ -46,6 +47,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Relleno
+    uniqueID: 1459138031
     locked: 0
   - name: Profundidad
     uniqueID: 3994681399
