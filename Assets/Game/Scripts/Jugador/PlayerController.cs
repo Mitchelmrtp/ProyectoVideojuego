@@ -776,7 +776,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("💎 ¡Diamante recogido! Aumentando capacidad de cambio de gravedad +1");
             maxGravityChanges += 1;
             gravityChangesAvailable += 1;
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
             ActualizarTextoGravedad();
         }
         else if (collision.name.ToLower().Contains("portal"))
@@ -842,6 +842,7 @@ public class PlayerController : MonoBehaviour
         
         rb.linearVelocity = Vector2.zero;
         
+        // Encontrar punto de spawn
         // Encontrar punto de spawn
         GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
         if (spawn != null)
@@ -928,6 +929,8 @@ public class PlayerController : MonoBehaviour
             attackAction.Enable();
             Debug.Log("✅ Input de ataque reactivado después del respawn");
         }
+
+        FindFirstObjectByType<OrbeRespawnManager>()?.RespawnOrbes();
     }
     #endregion
 
@@ -936,7 +939,7 @@ public class PlayerController : MonoBehaviour
     {
         if (txtGravedad != null)
         {
-            txtGravedad.text = $"Total de saltos de gravedad: {gravityChangesAvailable}";
+            txtGravedad.text = $" X {gravityChangesAvailable}";
         }
     }
 

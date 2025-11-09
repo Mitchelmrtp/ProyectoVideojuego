@@ -1,10 +1,43 @@
 fileFormatVersion: 2
-guid: f2eebda4b091dbe46aa37cd8966290d1
+guid: 0aaa5312981df894aab215a1f7fcd890
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9077834021344184831
-    second: IUVIDA_0
+      213: -3681407543570344039
+    second: quitale el fondo neg_0
+  - first:
+      213: 2227223974607012657
+    second: quitale el fondo neg_1
+  - first:
+      213: -4146585114336996294
+    second: quitale el fondo neg_2
+  - first:
+      213: -4731716702586819389
+    second: quitale el fondo neg_3
+  - first:
+      213: 5358103286480917821
+    second: quitale el fondo neg_4
+  - first:
+      213: 1459980371098627462
+    second: quitale el fondo neg_5
+  - first:
+      213: -6919024767818131957
+    second: quitale el fondo neg_6
+  - first:
+      213: 7662750347905253989
+    second: quitale el fondo neg_7
+  - first:
+      213: -7618864469043224699
+    second: quitale el fondo neg_8
+  - first:
+      213: 3604130145400098985
+    second: quitale el fondo neg_9
+  - first:
+      213: -337210702488168319
+    second: quitale el fondo neg_10
+  - first:
+      213: -6391081435239042351
+    second: quitale el fondo neg_11
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +70,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +84,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -97,19 +130,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -126,13 +146,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IUVIDA_0
+      name: quitale el fondo neg_1
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 33
-        height: 29
+        y: 0
+        width: 1024
+        height: 1024
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +161,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 106f2d3dd0e050280800000000000000
-      internalID: -9077834021344184831
+      spriteID: 1334fa19760b8ee10800000000000000
+      internalID: 2227223974607012657
       vertices: []
       indices: 
       edges: []
@@ -151,7 +171,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7fceb9fe9d6f43e42b4f53ab70181d5d
+    spriteID: edd563286d944554bad08fcf83b81eed
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +181,18 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IUVIDA_0: -9077834021344184831
+      quitale el fondo neg_0: -3681407543570344039
+      quitale el fondo neg_1: 2227223974607012657
+      quitale el fondo neg_10: -337210702488168319
+      quitale el fondo neg_11: -6391081435239042351
+      quitale el fondo neg_2: -4146585114336996294
+      quitale el fondo neg_3: -4731716702586819389
+      quitale el fondo neg_4: 5358103286480917821
+      quitale el fondo neg_5: 1459980371098627462
+      quitale el fondo neg_6: -6919024767818131957
+      quitale el fondo neg_7: 7662750347905253989
+      quitale el fondo neg_8: -7618864469043224699
+      quitale el fondo neg_9: 3604130145400098985
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

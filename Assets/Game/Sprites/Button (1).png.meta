@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f2eebda4b091dbe46aa37cd8966290d1
+guid: c57dc71c18744344ea8b837c759b12fe
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9077834021344184831
-    second: IUVIDA_0
+      213: -7414830730180813051
+    second: Button (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -97,19 +97,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -126,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IUVIDA_0
+      name: Button (1)_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 33
-        height: 29
+        y: 0
+        width: 1394
+        height: 652
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 106f2d3dd0e050280800000000000000
-      internalID: -9077834021344184831
+      spriteID: 50f1ce18cba391990800000000000000
+      internalID: -7414830730180813051
       vertices: []
       indices: 
       edges: []
@@ -151,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 7fceb9fe9d6f43e42b4f53ab70181d5d
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IUVIDA_0: -9077834021344184831
+      Button (1)_0: -7414830730180813051
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
