@@ -35,6 +35,16 @@ public static class EnemyManager
                 e.Respawn();
             }
         }
+        // Also trigger other enemy-type managers so EnemyManager becomes the single entry point
+        // for all enemy respawns (e.g., Slimes which use their own static manager).
+        try
+        {
+            SlimeManager.RespawnAll();
+        }
+        catch (System.Exception)
+        {
+            // If SlimeManager does not exist (e.g., build/config differences), ignore silently.
+        }
     }
 
     // Clear registry (if you want to forget all registered enemies)

@@ -828,16 +828,12 @@ public class PlayerController : MonoBehaviour
         if (respawnEnemiesOnPlayerDeath)
         {
             EnemyManager.RespawnAll();
-            SlimeManager.RespawnAll(); // También respawnear Slimes
             Debug.Log("EnemyManager: RespawnAll() called because player respawned.");
-            Debug.Log("SlimeManager: RespawnAll() called because player respawned.");
         }
         else
         {
             EnemyManager.Clear();
-            SlimeManager.Clear(); // También limpiar Slimes
             Debug.Log("EnemyManager: registry cleared (no respawn on player death).");
-            Debug.Log("SlimeManager: registry cleared (no respawn on player death).");
         }
         
         rb.linearVelocity = Vector2.zero;
