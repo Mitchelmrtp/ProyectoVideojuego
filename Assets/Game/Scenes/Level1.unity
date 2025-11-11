@@ -141,18 +141,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e3d86075445ae49b0ad437e0c30270, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ataque: {fileID: 2409014331475555410, guid: 143e83e77a56a5b4e9d19378c2eeb519, type: 3}
-  habilidad: {fileID: 6137052183202068499, guid: 328edaea8b0366f45ac73c8e148c0fdd, type: 3}
   rb2D: {fileID: 0}
   jugador: {fileID: 0}
+  distanciaDeteccion: 8
+  distanciaAtaque: 3.2
+  distanciaPerdida: 12
+  distanciaPostAtaque: 4
+  ataque: {fileID: 2409014331475555410, guid: 143e83e77a56a5b4e9d19378c2eeb519, type: 3}
+  habilidad: {fileID: 6137052183202068499, guid: 328edaea8b0366f45ac73c8e148c0fdd, type: 3}
   Llave: {fileID: 0}
+  ataqueSpeed: 6
+  habilidadSpeed: 4
+  vida: 10
   barraDeVida: {fileID: 1992149171}
   BarraVida: {fileID: 1992149168}
-  vida: 10
-  distanciaDeteccion: 8
-  distanciaPerdida: 12
-  distanciaAtaque: 3.2
-  distanciaPostAtaque: 4
 --- !u!1 &20082116
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,7 +311,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -375,9 +377,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1459310930}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1459310935}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &98985791
 GameObject:
@@ -486,8 +485,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -509,7 +506,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -839,7 +835,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &168085061
 Transform:
   m_ObjectHideFlags: 0
@@ -897,8 +893,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -920,7 +914,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -992,7 +985,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -1030,7 +1023,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -1108,9 +1101,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 760086618}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 760086623}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1001 &179832251
 PrefabInstance:
@@ -1122,7 +1112,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -1188,9 +1178,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1036512154}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1036512159}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1001 &237132363
 PrefabInstance:
@@ -1202,7 +1189,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -1280,9 +1267,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1887686757}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1887686762}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &242214643
 GameObject:
@@ -1395,7 +1379,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -1461,9 +1445,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1371265384}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1371265389}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &288582715
 GameObject:
@@ -1518,8 +1499,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1541,7 +1520,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1459138031
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -117420,7 +117398,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -117498,9 +117476,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 458263657}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 458263662}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!4 &403340232 stripped
 Transform:
@@ -117526,18 +117501,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 458263649}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &458263662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 458263649}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -117549,7 +117512,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &492059869 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
@@ -117569,18 +117532,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 492059869}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &492059882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 492059869}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -117592,7 +117543,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &492088932 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6548626434366850739, guid: f43d5697198db1f458c5fc42ad652665, type: 3}
@@ -117663,6 +117614,7 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
+  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -117670,7 +117622,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
-  m_Version: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -117837,8 +117788,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -117860,7 +117809,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -783347025
   m_SortingLayer: 5
   m_SortingOrder: 0
@@ -124118,8 +124066,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -124141,7 +124087,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -124366,7 +124311,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -124444,9 +124389,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 766433176}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 766433181}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &714755506
 GameObject:
@@ -124550,18 +124492,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 760086606}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &760086623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 760086606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -124573,7 +124503,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &766433168 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
@@ -124593,18 +124523,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 766433168}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &766433181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 766433168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -124616,7 +124534,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &766553064
 GameObject:
   m_ObjectHideFlags: 0
@@ -124745,8 +124663,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -124768,7 +124684,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -125112,8 +125027,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -125135,7 +125048,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -125371,8 +125283,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -125394,7 +125304,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -125586,8 +125495,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -125609,7 +125516,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1549239935
   m_SortingLayer: 3
   m_SortingOrder: 0
@@ -125878,7 +125784,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -125952,9 +125858,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1235854469}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1235854474}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &943946671
 GameObject:
@@ -127055,8 +126958,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -127078,7 +126979,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 427561587
   m_SortingLayer: 7
   m_SortingOrder: 0
@@ -127368,7 +127268,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -127446,9 +127346,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 492059877}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 492059882}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &1036512145 stripped
 GameObject:
@@ -127469,18 +127366,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1036512145}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1036512159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036512145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -127492,7 +127377,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!4 &1073981374 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2848023492578458502, guid: 0aa1778f82645cd43a6c608910476f28, type: 3}
@@ -127660,18 +127545,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1235854461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1235854474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1235854461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -127683,7 +127556,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1001 &1246333287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -127694,7 +127567,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -127772,9 +127645,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1612694370}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1612694375}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1001 &1264314865
 PrefabInstance:
@@ -128285,18 +128155,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1371265375}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1371265389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1371265375}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -128308,7 +128166,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &1377662837
 GameObject:
   m_ObjectHideFlags: 0
@@ -128394,8 +128252,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -128417,7 +128273,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -128479,7 +128334,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 653365788531127429, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       propertyPath: m_SortingLayerID
@@ -128557,9 +128412,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1445294703}
-    - targetCorrespondingSourceObject: {fileID: 6615709960783999116, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1445294708}
   m_SourcePrefab: {fileID: 100100000, guid: 0d2bda271c4027347bae49cb09549ced, type: 3}
 --- !u!1 &1445294695 stripped
 GameObject:
@@ -128580,18 +128432,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1445294695}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1445294708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1445294695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -128603,7 +128443,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1001 &1458179623
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -128638,7 +128478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6449009028014577495, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
       propertyPath: m_Size.y
-      value: 3.3385468
+      value: 2.65
       objectReference: {fileID: 0}
     - target: {fileID: 6449009028014577495, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
       propertyPath: m_Enabled
@@ -128723,18 +128563,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1459310918}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1459310935
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1459310918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -128746,7 +128574,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &1557858694
 GameObject:
   m_ObjectHideFlags: 0
@@ -128800,8 +128628,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -128823,7 +128649,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1459138031
   m_SortingLayer: 1
   m_SortingOrder: 0
@@ -129117,18 +128942,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1612694362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1612694375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1612694362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -129140,7 +128953,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!4 &1643189592 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2848023492578458502, guid: 0aa1778f82645cd43a6c608910476f28, type: 3}
@@ -129260,8 +129073,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -129283,7 +129094,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -129509,8 +129319,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -129532,7 +129340,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -129664,8 +129471,6 @@ TilemapRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -129687,7 +129492,6 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 1581377889
   m_SortingLayer: 4
   m_SortingOrder: 0
@@ -133907,8 +133711,6 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -133930,7 +133732,6 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1115572491
   m_SortingLayer: 6
   m_SortingOrder: 0
@@ -134123,18 +133924,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 1887686749}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 822c475dd1653fc40bbe3184e825c90f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1887686762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887686749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e82f0d95b224654583bfb5037ba601a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -134146,7 +133935,7 @@ MonoBehaviour:
   attackDamage: 1
   attackCooldown: 2
   maxHealth: 1
-  health: 1
+  health: 2
 --- !u!1 &1901539990
 GameObject:
   m_ObjectHideFlags: 0
