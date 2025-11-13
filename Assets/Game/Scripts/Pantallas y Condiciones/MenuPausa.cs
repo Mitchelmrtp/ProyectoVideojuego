@@ -12,6 +12,13 @@ public class MenuPausa : MonoBehaviour
 
     private void Start()
     {
+        // Reinicializar la acción de pausa
+        if (pauseAction != null)
+        {
+            pauseAction.Disable();
+            pauseAction.Dispose();
+        }
+        
         pauseAction = new InputAction("Pause", InputActionType.Button, "<Keyboard>/escape");
         pauseAction.Enable();
     }
@@ -49,8 +56,17 @@ public class MenuPausa : MonoBehaviour
 
     public void ReiniciarNivel()
     {
+        // Asegurar que el tiempo se restaure antes de cambiar de escena
         juegoPausado = false;
         Time.timeScale = 1f;
+        
+        // Limpiar cualquier input action que pueda estar activa
+        if (pauseAction != null)
+        {
+            pauseAction.Disable();
+        }
+        
+        // Recargar la escena
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

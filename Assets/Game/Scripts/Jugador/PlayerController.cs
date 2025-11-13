@@ -66,7 +66,10 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         
-        jumpAction = InputSystem.actions.FindAction("Jump");
+        // Reinicializar todas las acciones de input manualmente para evitar problemas de referencia
+        jumpAction = new InputAction("Jump", InputActionType.Button, "<Keyboard>/space");
+        jumpAction.Enable();
+        
         testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
         testGravityAction.Enable();
         
@@ -75,6 +78,12 @@ public class PlayerController : MonoBehaviour
         
         attackAction = new InputAction("Attack", InputActionType.Button, "<Mouse>/leftButton");
         attackAction.Enable();
+        
+        // Asegurar que todas las variables de estado se reseteen correctamente
+        canMove = true;
+        isAttacking = false;
+        isDying = false;
+        isGravedadInvertida = false;
 
         baseMaxGravityChanges = maxGravityChanges;
         gravityChangesAvailable = maxGravityChanges;
