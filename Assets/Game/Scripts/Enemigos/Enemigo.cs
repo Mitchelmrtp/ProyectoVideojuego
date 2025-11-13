@@ -347,7 +347,7 @@ public abstract class Enemigo : MonoBehaviour
         
         Debug.Log($"Enemigo {gameObject.name} respawneado. Vida: {vida}");
     }
-
+    
     // Método para obtener la vida por defecto (debe ser sobrescrito)
     protected virtual float GetDefaultHealth()
     {

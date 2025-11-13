@@ -27,6 +27,12 @@ public class Mother : MonoBehaviour
     public GameObject BarraVida;
 
     private bool mirandoDerecha = true;
+    
+    // Variables para respawn y estado inicial
+    private Vector3 originalPosition;
+    private float originalVida;
+    private bool originalMirandoDerecha;
+    private bool isDead = false;
 
     void Start()
     {
@@ -49,11 +55,19 @@ public class Mother : MonoBehaviour
         {
             BarraVida.SetActive(true);
         }
+
+        // Guardar estado inicial para respawn
+        originalPosition = transform.position;
+        originalVida = vida;
+        originalMirandoDerecha = mirandoDerecha;
+        isDead = false;
+
+        Debug.Log($"Mother inicializada - Posición: {originalPosition}, Vida: {originalVida}");
     }
 
     void Update()
     {
-        if (jugador == null || animator == null) return;
+        if (jugador == null || animator == null || isDead) return;
 
         float distanciaJugador = Vector2.Distance(transform.position, jugador.position);
         animator.SetFloat("distanciaJugador", distanciaJugador);
@@ -64,7 +78,7 @@ public class Mother : MonoBehaviour
     // Voltea el sprite según la posición del jugador
     public void MirarJugador()
     {
-        if (jugador == null) return;
+        if (jugador == null || isDead) return;
         bool jugadorALaDerecha = jugador.position.x > transform.position.x;
         if (jugadorALaDerecha != mirandoDerecha)
         {
@@ -78,7 +92,7 @@ public class Mother : MonoBehaviour
     // Instancia el prefab de ataque (si existe)
     public void Atacar()
     {
-        if (ataque == null) return;
+        if (ataque == null || isDead) return;
         GameObject nuevo = Instantiate(ataque, transform.position, Quaternion.identity);
 
         // Preferir componente de control de ataque si existe
@@ -114,7 +128,7 @@ public class Mother : MonoBehaviour
     // Mantenerlo público y sin parámetros para que Unity pueda encontrarlo.
     public void UsarHabilidad()
     {
-        if (habilidad == null) return;
+        if (habilidad == null || isDead) return;
         GameObject nueva = Instantiate(habilidad, transform.position, Quaternion.identity);
 
         var habilidadScript = nueva.GetComponent<AtaqueNormal>();
@@ -146,13 +160,19 @@ public class Mother : MonoBehaviour
 
     public void TomarDaño(float daño)
     {
+        if (isDead) return; // Evitar daño múltiple cuando ya está muerto
+        
         vida -= daño;
         if (barraDeVida != null) barraDeVida.CambiarVidaActual(vida);
 
         if (vida <= 0f)
         {
-            if (animator != null) animator.SetTrigger("Muerte");
-            if (BarraVida != null) BarraVida.SetActive(false);
+            if (!isDead) // Solo trigger si no estaba muerto antes
+            {
+                isDead = true;
+                if (animator != null) animator.SetTrigger("Muerte");
+                if (BarraVida != null) BarraVida.SetActive(false);
+            }
         }
         else
         {
@@ -165,6 +185,65 @@ public class Mother : MonoBehaviour
     {
         if (Llave != null) Instantiate(Llave, transform.position, Quaternion.identity);
         Destroy(gameObject);
+    }
+
+    // Método público para respawn/reinicio
+    public void Respawn()
+    {
+        // Restaurar posición y rotación
+        transform.position = originalPosition;
+        transform.rotation = Quaternion.identity;
+        
+        // Restaurar vida y estado
+        vida = originalVida;
+        isDead = false;
+        
+        // Restaurar dirección
+        mirandoDerecha = originalMirandoDerecha;
+        
+        // Reactivar gameObject si estaba desactivado
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+        
+        // Reactivar colliders
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        foreach (var col in colliders)
+        {
+            col.enabled = true;
+        }
+        
+        // Resetear animator
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+            
+            // Asegurar que no hay triggers activos
+            animator.ResetTrigger("Muerte");
+            animator.ResetTrigger("Hit");
+        }
+        
+        // Restaurar barra de vida
+        if (barraDeVida != null)
+        {
+            barraDeVida.InicializarBarraVida(vida);
+        }
+        
+        if (BarraVida != null)
+        {
+            BarraVida.SetActive(true);
+        }
+        
+        // Limpiar velocidad si tiene Rigidbody2D
+        if (rb2D != null)
+        {
+            rb2D.linearVelocity = Vector2.zero;
+            rb2D.angularVelocity = 0f;
+        }
+        
+        Debug.Log($"Mother: Respawn completado - Posición: {transform.position}, Vida: {vida}, isDead: {isDead}");
     }
 }
  
