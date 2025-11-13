@@ -8,11 +8,6 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    // PROTECCIÓN GLOBAL: Variable estática para prevenir múltiples muertes
-    private static bool globalDeathInProgress = false;
-    
-    // PROTECCIÓN ADICIONAL: Rastrear el último frame donde se activó la muerte
-    private static int lastDeathFrame = -1;
     
     [Header("Detector de suelo")]
     public float speed = 5f;
@@ -20,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public float collisionOffset = 0.05f;
 
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI txtGravedad; // Texto que mostrará los cambios
+    [SerializeField] private TextMeshProUGUI txtGravedad;
 
     [Header("Parámetros para detector de piso")]
     [SerializeField] private Transform detector;
@@ -28,43 +23,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Límite de cambios de gravedad")]
-    [SerializeField] private int maxGravityChanges = 2; // Número máximo de veces que se puede cambiar la gravedad
-    private int baseMaxGravityChanges;              
+    [SerializeField] private int maxGravityChanges = 2;
+    private int baseMaxGravityChanges;
     private int gravityChangesAvailable;
 
     [Header("Combate")]
-    public Transform controladorGolpe;
-    public float radioGolpe;
-    public float dañoGolpe;
-    public float tiempoEntreAtaques = 0.4f;
-    public float tiempoSiguienteAtaque;
-    public SwordAttack swordAttackComponent; // Referencia al componente SwordAttack
+    public SwordAttack swordAttackComponent;
 
     [Header("Vida")]
     public int maxHealth = 5;
-    public int currentHealth { get; private set; } // Hacer currentHealth público pero solo lectura
-    public UnityEvent<int> cambioVida; // Evento para notificar cambios en la vida
+    public int currentHealth { get; private set; }
+    public UnityEngine.Events.UnityEvent<int> cambioVida;
     
     [Header("Configuración Extra")]
     public int ScenaActual;
     public bool TieneLlave = false;
 
-    [Header("Timing")]
-    [Tooltip("Duración por defecto de la animación de muerte (segundos).")]
-    public float deathDuration = 2.2f;
-    [Tooltip("Duración por defecto del hit (segundos).")]
-    public float hitDuration = 0.5f;
-    
-    [Header("Respawn")]
-    [Tooltip("Si está activado, al morir el jugador se limpiará la lista de enemigos derrotados para que reaparezcan.")]
-    public bool respawnEnemiesOnPlayerDeath = true;
-
-    // Componentes principales
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     
-    // Input
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
     List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
@@ -73,85 +51,40 @@ public class PlayerController : MonoBehaviour
     private InputAction moveAction;
     private InputAction attackAction;
     
-    // Estados
     bool canMove = true;
     [HideInInspector] public bool isAttacking = false;
-    public bool isDying { get; private set; } = false; // Hacer isDying público pero solo lectura
+    public bool isDying { get; private set; } = false;
     private bool isGravedadInvertida = false;
     private bool isGrounded = false;
-    
-    // Corrutinas
-    private Coroutine deathCoroutine = null;
-    private Coroutine hitCoroutine = null;
-    private float horizontal;
 
     void Start()
     {
-        // Inicializar componentes
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         
-        // Inicializar input
         jumpAction = InputSystem.actions.FindAction("Jump");
         testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
         testGravityAction.Enable();
         
-        // Crear acciones de input para el nuevo sistema
         moveAction = new InputAction("Move", InputActionType.Value, "<Keyboard>/a,<Keyboard>/d,<Keyboard>/leftArrow,<Keyboard>/rightArrow");
         moveAction.Enable();
         
         attackAction = new InputAction("Attack", InputActionType.Button, "<Mouse>/leftButton");
         attackAction.Enable();
 
-        // Inicializar gravedad
         baseMaxGravityChanges = maxGravityChanges;
         gravityChangesAvailable = maxGravityChanges;
         ActualizarTextoGravedad();
 
-        // Inicializar vida
         currentHealth = maxHealth;
         cambioVida.Invoke(currentHealth);
 
-        Debug.Log($"PlayerController iniciado. Vida: {currentHealth}/{maxHealth}, Cambios de gravedad: {gravityChangesAvailable}/{maxGravityChanges}");
-        
-        // Verificar parámetros del animador
-        VerificarAnimatorParametros();
-        
-        // Verificar SwordAttack component
         if (swordAttackComponent == null)
         {
-            // Intentar encontrar SwordAttack en el mismo GameObject o en hijos
             swordAttackComponent = GetComponent<SwordAttack>();
             if (swordAttackComponent == null)
                 swordAttackComponent = GetComponentInChildren<SwordAttack>();
-            
-            if (swordAttackComponent != null)
-                Debug.Log("✅ SwordAttack component encontrado automáticamente");
-            else
-                Debug.LogWarning("⚠️ SwordAttack component no encontrado. Asígnalo manualmente en el inspector para activar el swordHitBox");
-        }
-        else
-        {
-            Debug.Log("✅ SwordAttack component asignado correctamente");
-        }
-        
-        // CRÍTICO: Verificar y desactivar DarkMovement si existe (evita doble sistema)
-        MonoBehaviour darkMovement = GetComponent("DarkMovement") as MonoBehaviour;
-        if (darkMovement != null)
-        {
-            darkMovement.enabled = false;
-            Debug.LogWarning("⚠️ DarkMovement detectado y DESACTIVADO para evitar conflictos con PlayerController");
-        }
-        
-        // Verificar otros componentes que puedan interferir
-        MonoBehaviour[] allComponents = GetComponents<MonoBehaviour>();
-        foreach (MonoBehaviour component in allComponents)
-        {
-            if (component != this && component.GetType().Name.Contains("Movement"))
-            {
-                Debug.LogWarning($"⚠️ Componente de movimiento detectado: {component.GetType().Name}");
-            }
         }
     }
 
@@ -162,17 +95,13 @@ public class PlayerController : MonoBehaviour
             Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
             isGrounded = colision != null;
             
-            // Para el sistema de gravedad invertida, ajustar la lógica de salto
             bool canJump = isGravedadInvertida ? !isGrounded : isGrounded;
 
-            if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
-            {
-                Debug.Log("El personaje debe saltar...");
-                float jumpDirection = isGravedadInvertida ? -jumpForce : jumpForce;
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
-            }
-
-            // Actualizar parámetros del animator relacionados con salto/grounded
+        if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
+        {
+            float jumpDirection = isGravedadInvertida ? -jumpForce : jumpForce;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
+        }
             if (animator != null)
             {
                 if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
@@ -186,80 +115,49 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Control de gravedad manual
         if (testGravityAction.WasPressedThisFrame())
         {
             if (gravityChangesAvailable > 0)
             {
                 CambiarGravedad();
                 gravityChangesAvailable--;
-                Debug.Log($"Cambio de gravedad realizado. Restantes: {gravityChangesAvailable}/{maxGravityChanges}");
                 ActualizarTextoGravedad();
             }
-            else
-            {
-                Debug.Log("❌ No tienes más cambios de gravedad disponibles.");
-            }
         }
         
-        // Debug: Mostrar estado de muerte en tiempo real
-        if (isDying && Time.frameCount % 60 == 0) // Cada segundo aproximadamente
-        {
-            Debug.Log($"🔍 Estado de muerte: isDying={isDying}, deathCoroutine={deathCoroutine != null}, currentHealth={currentHealth}");
-        }
-        
-        // Fallback de emergencia: si el jugador lleva mucho tiempo muerto sin respawnear
-        if (currentHealth <= 0 && !isDying && deathCoroutine == null)
-        {
-            Debug.LogWarning("⚠️ Jugador muerto sin proceso de respawn activo. Forzando respawn...");
-            PlayerDeath();
-        }
+
     }
 
     void OnMove(InputValue movementValue)
     {
         Vector2 fullInput = movementValue.Get<Vector2>();
         movementInput = new Vector2(fullInput.x, 0);
-        Debug.Log($"Input recibido: {fullInput.x}, movementInput: {movementInput.x}");
     }
 
     void OnFire()
     {
-        // Evitar atacar si el jugador está muerto o muriendo
-        if (currentHealth <= 0 || isDying || deathCoroutine != null)
+        if (currentHealth <= 0 || isDying)
         {
-            Debug.Log("OnFire: jugador está muerto o muriendo, ignorando ataque");
             return;
         }
         
-        // Evitar iniciar otro ataque mientras ya se está atacando
         if (isAttacking)
         {
-            Debug.Log("OnFire: ya se está atacando, ignorando input.");
             return;
         }
         
-        // Evitar atacar si no se puede mover
         if (!canMove)
         {
-            Debug.Log("OnFire: movimiento bloqueado, ignorando ataque");
             return;
         }
 
-        if (animator == null)
-        {
-            Debug.LogError("OnFire: animator es null");
-            return;
-        }
+        if (animator == null) return;
 
         if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Trigger))
             animator.SetTrigger("isAttacking");
         else if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool))
             animator.SetBool("isAttacking", true);
 
-        Debug.Log("Attacked");
-
-        // Llamamos directamente al método de ataque
         SwordAttack();
     }
 
@@ -269,18 +167,14 @@ public class PlayerController : MonoBehaviour
         {
             float horizontalInput = movementInput.x;
             
-            // Aplicar movimiento
             rb.linearVelocity = new Vector2(horizontalInput * speed, rb.linearVelocity.y);
             
-            // Configurar animación de correr/caminar (basado en PlayerController2)
             if (animator != null)
             {
-                // Intentar primero con "running"
                 if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
                 {
                     animator.SetBool("running", horizontalInput != 0.0f);
                 }
-                // Si no existe "running", intentar con "isMoving"
                 else if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
                 {
                     animator.SetBool("isMoving", horizontalInput != 0.0f);
@@ -301,7 +195,6 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             if (animator != null)
             {
-                // Detener animación de movimiento
                 if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
                 {
                     animator.SetBool("running", false);
@@ -320,15 +213,12 @@ public class PlayerController : MonoBehaviour
     {
         float jumpDirection = isGravedadInvertida ? -jumpForce : jumpForce;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
-        Debug.Log($"🚀 Salto ejecutado con fuerza: {jumpDirection}, Gravedad invertida: {isGravedadInvertida}");
     }
 
     private void Golpe()
     {
-        // Evitar atacar si el jugador está muerto o muriendo
-        if (currentHealth <= 0 || isDying || deathCoroutine != null)
+        if (currentHealth <= 0 || isDying)
         {
-            Debug.Log("Golpe: jugador está muerto o muriendo, ignorando ataque");
             return;
         }
         
@@ -336,7 +226,6 @@ public class PlayerController : MonoBehaviour
         
         isAttacking = true;
         
-        // Activar animación de ataque usando la lógica simple como PlayerController2
         if (animator != null)
         {
             if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Trigger))
@@ -345,97 +234,41 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("isAttacking", true);
         }
         
-        Debug.Log("🗡️ Animación de ataque activada");
-        
-        // Activar SwordAttack component si está asignado
         if (swordAttackComponent != null)
         {
-            // Determinar dirección del ataque basado en la rotación o flip del sprite
             if (spriteRenderer != null && spriteRenderer.flipX)
             {
                 swordAttackComponent.AttackLeft();
-                Debug.Log("🗡️ SwordAttack: Atacando hacia la izquierda");
             }
             else
             {
                 swordAttackComponent.AttackRight();
-                Debug.Log("🗡️ SwordAttack: Atacando hacia la derecha");
             }
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ swordAttackComponent no está asignado en PlayerController");
-        }
-        
-        // Detección de enemigos en el radio de ataque (sistema adicional)
-        if (controladorGolpe == null)
-        {
-            Debug.LogError("❌ controladorGolpe no está asignado en el PlayerController!");
-            isAttacking = false;
-            return;
-        }
-        
-        Debug.Log($"🔍 Iniciando detección de enemigos desde {controladorGolpe.name} en posición {controladorGolpe.position} con radio {radioGolpe}");
-        
-        Collider2D[] objetos = Physics2D.OverlapCircleAll(controladorGolpe.position, radioGolpe);
-        Debug.Log($"🔍 Detectados {objetos.Length} objetos en el radio de ataque en posición {controladorGolpe.position} con radio {radioGolpe}");
-
-        foreach (Collider2D colisionador in objetos)
-        {
-            Debug.Log($"🎯 Objeto detectado: {colisionador.name}, Tag: {colisionador.tag}");
             
-            if (colisionador.CompareTag("Enemy"))
-            {
-                // Para enemigos comunes, usar el sistema de daño de DARK_GAME
-                var enemigo = colisionador.transform.GetComponent<Enemigo>();
-                if (enemigo != null)
-                {
-                    enemigo.TomarDaño(dañoGolpe);
-                    Debug.Log($"✅ Daño aplicado a enemigo: {dañoGolpe}");
-                }
-                
-                // Para Slimes, usar su sistema de daño específico
-                var slime = colisionador.transform.GetComponent<Slime>();
-                if (slime != null)
-                {
-                    Debug.Log($"🎯 Slime detectado: {colisionador.name}");
-                    slime.TakeDamage(dañoGolpe);
-                    Debug.Log($"✅ Daño aplicado a slime: {dañoGolpe}");
-                }
-                else
-                {
-                    Debug.Log($"⚠️ Objeto con tag Enemy no tiene componente Slime: {colisionador.name}");
-                }
-            }
-            else if (colisionador.CompareTag("Jefe"))
-            {
-                // Para jefes, usar el sistema específico
-                var mother = colisionador.transform.GetComponent<Mother>();
-                if (mother != null)
-                {
-                    mother.TomarDaño(dañoGolpe);
-                    Debug.Log($"✅ Daño aplicado a jefe: {dañoGolpe}");
-                }
-            }
+            StartCoroutine(AutoStopSwordAttack());
         }
         
-        // Resetear el estado de ataque después de un tiempo
         StartCoroutine(ResetAttackCoroutine());
     }
     
-    // Método alternativo para compatibilidad con PlayerController2
+    private IEnumerator AutoStopSwordAttack()
+    {
+        yield return new WaitForSeconds(0.3f);
+        if (swordAttackComponent != null)
+        {
+            swordAttackComponent.StopAttack();
+        }
+    }
+    
     public void SwordAttack()
     {
         Golpe();
     }
     
-    // Métodos para Animation Events
     public void StartSwordAttack()
     {
-        Debug.Log("🎬 Animation Event: StartSwordAttack");
         if (swordAttackComponent != null)
         {
-            // Determinar dirección del ataque basado en la rotación o flip del sprite
             if (spriteRenderer != null && spriteRenderer.flipX)
             {
                 swordAttackComponent.AttackLeft();
@@ -449,7 +282,6 @@ public class PlayerController : MonoBehaviour
     
     public void StopSwordAttack()
     {
-        Debug.Log("🎬 Animation Event: StopSwordAttack");
         if (swordAttackComponent != null)
         {
             swordAttackComponent.StopAttack();
@@ -460,24 +292,20 @@ public class PlayerController : MonoBehaviour
     {
         isAttacking = false;
         
-        // Desactivar SwordAttack component si está asignado
         if (swordAttackComponent != null)
         {
             swordAttackComponent.StopAttack();
-            Debug.Log("🗡️ SwordAttack: Ataque detenido");
         }
         
-        // Solo resetear si es un Bool, los Triggers se resetean automáticamente
         if (animator != null && HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool))
         {
             animator.SetBool("isAttacking", false);
         }
-        Debug.Log("🗡️ Ataque finalizado");
     }
 
     private IEnumerator ResetAttackCoroutine()
     {
-        yield return new WaitForSeconds(tiempoEntreAtaques);
+        yield return new WaitForSeconds(0.4f);
         EndSwordAttack();
     }
     
@@ -492,89 +320,39 @@ public class PlayerController : MonoBehaviour
         canMove = true;
     }
 
-    public void TakeDamage(int amount)
-    {
-        Debug.Log($"💥 TakeDamage llamado: amount={amount}, currentHealth={currentHealth}, isDying={isDying}");
-        
-        if (currentHealth <= 0 || isDying)
-        {
-            Debug.Log("⚠️ TakeDamage IGNORADO: jugador ya está muerto o muriendo");
-            return;
-        }
-
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0); // Asegurar que no sea negativo
-        cambioVida.Invoke(currentHealth);
-        Debug.Log($"💔 Player: TakeDamage({amount}). Vida restante: {currentHealth}");
-
-        if (currentHealth <= 0)
-        {
-            Debug.Log("💀 TakeDamage: Vida llegó a 0, llamando a Die()");
-            Die();
-        }
-        else
-        {
-            // Reproducir animación de daño/hit si existe el parámetro
-            if (animator != null)
-            {
-                if (HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
-                    animator.SetTrigger("Hit");
-                if (HasAnimatorParameter("isHurt", AnimatorControllerParameterType.Trigger))
-                    animator.SetTrigger("isHurt");
-            }
-            LockMovement();
-
-            // Iniciar fallback para desbloquear movimiento
-            if (hitCoroutine != null)
-                StopCoroutine(hitCoroutine);
-            hitCoroutine = StartCoroutine(HitReactionCoroutine());
-        }
-    }
-
-    #region Sistema de Vida y Daño
     public void RecibirDaño(int daño)
     {
-        Debug.Log($"💥 RecibirDaño llamado: daño={daño}, currentHealth={currentHealth}, isDying={isDying}");
-        
         if (currentHealth <= 0 || isDying)
         {
-            Debug.Log("⚠️ RecibirDaño IGNORADO: jugador ya está muerto o muriendo");
             return;
         }
         
         currentHealth -= daño;
-        currentHealth = Mathf.Max(currentHealth, 0); // Asegurar que no sea negativo
         cambioVida.Invoke(currentHealth);
-        
-        Debug.Log($"💔 Daño recibido: {daño}. Vida restante: {currentHealth}");
         
         if (currentHealth <= 0)
         {
-            Debug.Log("💀 RecibirDaño: Vida llegó a 0, llamando a Die()");
             Die();
         }
         else
         {
-            // Activar animación de golpe/daño
-            if (animator != null && HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
+            if (animator != null)
             {
                 animator.SetTrigger("Hit");
             }
-            
-            // Detener corrutina anterior si existe
-            if (hitCoroutine != null)
-            {
-                StopCoroutine(hitCoroutine);
-            }
-            hitCoroutine = StartCoroutine(HitReactionCoroutine());
         }
     }
 
+    #region Sistema de Vida y Daño
+    public void TakeDamage(int amount)
+    {
+        RecibirDaño(amount);
+    }
+    
     public void CurarVida(int cantidadCuracion)
     {
         currentHealth = Mathf.Min(currentHealth + cantidadCuracion, maxHealth);
         cambioVida.Invoke(currentHealth);
-        Debug.Log($"Vida curada: +{cantidadCuracion}. Vida actual: {currentHealth}/{maxHealth}");
     }
 
     public bool PuedeCurarse()
@@ -582,137 +360,32 @@ public class PlayerController : MonoBehaviour
         return currentHealth < maxHealth;
     }
 
-    private IEnumerator HitReactionCoroutine()
-    {
-        yield return new WaitForSeconds(hitDuration);
-        UnlockMovement();
-        hitCoroutine = null;
-    }
-    
-    public void EndHurt()
-    {
-        // Llamado desde animación al terminar el hit
-        if (hitCoroutine != null)
-        {
-            StopCoroutine(hitCoroutine);
-            hitCoroutine = null;
-        }
-        UnlockMovement();
-    }
-
     public void Die()
     {
-        Debug.Log($"💀 Die() llamado - isDying={isDying}, globalDeathInProgress={globalDeathInProgress}, deathCoroutine={deathCoroutine != null}, currentHealth={currentHealth}, frame={Time.frameCount}");
-        
-        // PROTECCIÓN GLOBAL Y LOCAL: Evitar múltiples llamadas a Die()
-        if (isDying || globalDeathInProgress)
+        // Buscar el SpawnPoint y respawnear al jugador
+        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
+        if (spawn != null)
         {
-            Debug.Log("⚠️ Die() COMPLETAMENTE IGNORADO: muerte ya en progreso (local o global)");
-            return;
-        }
-        
-        // PROTECCIÓN TEMPORAL: No permitir múltiples activaciones en el mismo frame o frames consecutivos
-        if (Time.frameCount <= lastDeathFrame + 2) // Prevenir activaciones en los siguientes 2 frames
-        {
-            Debug.Log($"⚠️ Die() IGNORADO: muy poco tiempo desde la última muerte. Frame actual: {Time.frameCount}, último: {lastDeathFrame}");
-            return;
-        }
-        
-        // PROTECCIÓN ADICIONAL: Verificar si la animación de muerte ya está activa
-        if (animator != null)
-        {
-            AnimatorStateInfo currentStateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            if (currentStateInfo.IsName("Player_death") || currentStateInfo.IsName("player_death"))
+            transform.position = spawn.transform.position;
+            // Restaurar vida y estado del jugador
+            currentHealth = maxHealth;
+            cambioVida.Invoke(currentHealth);
+            isDying = false;
+            UnlockMovement();
+            // Restaurar gravedad si está invertida
+            if (isGravedadInvertida)
             {
-                Debug.Log("⚠️ Die() IGNORADO: animación de muerte ya está reproduciéndose");
-                return;
+                RestaurarGravedad();
             }
-            
-            // También verificar si hay una transición hacia el estado de muerte
-            if (animator.IsInTransition(0))
-            {
-                AnimatorStateInfo nextStateInfo = animator.GetNextAnimatorStateInfo(0);
-                if (nextStateInfo.IsName("Player_death") || nextStateInfo.IsName("player_death"))
-                {
-                    Debug.Log("⚠️ Die() IGNORADO: ya hay una transición hacia la animación de muerte");
-                    return;
-                }
-            }
+            // Restaurar cambios de gravedad disponibles
+            gravityChangesAvailable = maxGravityChanges;
+            ActualizarTextoGravedad();
         }
-        
-        // Marcar inmediatamente como muriendo GLOBALMENTE y LOCALMENTE
-        isDying = true;
-        globalDeathInProgress = true;
-        lastDeathFrame = Time.frameCount; // Registrar el frame de la muerte
-        currentHealth = 0; // Asegurar que la vida esté en 0
-        
-        Debug.Log($"🚩 isDying y globalDeathInProgress establecidos a TRUE en frame {Time.frameCount} - bloqueando futuras llamadas a Die()");
-        
-        // Activar SOLO UNA VEZ el trigger de muerte
-        if (animator != null)
-        {
-            // Solo usar el trigger Death ya que es el que está configurado en tu Animator
-            if (HasAnimatorParameter("Death", AnimatorControllerParameterType.Trigger))
-            {
-                animator.SetTrigger("Death");
-                Debug.Log("🎭 Activando animación: Death (Trigger) - UNA SOLA VEZ");
-            }
-            else if (HasAnimatorParameter("isDead", AnimatorControllerParameterType.Trigger))
-            {
-                animator.SetTrigger("isDead");
-                Debug.Log("🎭 Activando animación: isDead (Trigger) - UNA SOLA VEZ");
-            }
-        }
-        
-        LockMovement();
-        
-        // Desactivar temporalmente el input de ataque
-        if (attackAction != null)
-        {
-            attackAction.Disable();
-            Debug.Log("🚫 Input de ataque desactivado durante la muerte");
-        }
-        
-        // Detener todas las corrutinas activas para evitar conflictos
-        if (deathCoroutine != null)
-        {
-            StopCoroutine(deathCoroutine);
-            deathCoroutine = null;
-        }
-        if (hitCoroutine != null)
-        {
-            StopCoroutine(hitCoroutine);
-            hitCoroutine = null;
-        }
-        
-        // Iniciar proceso de muerte con fallback
-        deathCoroutine = StartCoroutine(DeathCoroutine());
     }
     
-    public void EndDeath()
-    {
-        // Llamado desde animación de muerte
-        if (deathCoroutine != null)
-        {
-            StopCoroutine(deathCoroutine);
-            deathCoroutine = null;
-        }
-        PlayerDeath();
-    }
 
-    private IEnumerator DeathCoroutine()
-    {
-        Debug.Log("💀 Iniciando DeathCoroutine...");
-        
-        // Reducir el tiempo de espera para respawn más rápido
-        float waitTime = Mathf.Min(deathDuration, 3f); // Máximo 3 segundos
-        Debug.Log($"💀 Esperando {waitTime} segundos antes del respawn...");
-        yield return new WaitForSeconds(waitTime);
-        
-        Debug.Log("💀 DeathCoroutine completado, iniciando respawn...");
-        deathCoroutine = null;
-        PlayerDeath();
-    }
+
+
     #endregion
 
     #region Sistema de Gravedad
@@ -720,60 +393,46 @@ public class PlayerController : MonoBehaviour
     {
         isGravedadInvertida = !isGravedadInvertida;
         
-        Debug.Log($"=== CAMBIO DE GRAVEDAD ===");
-        Debug.Log($"Gravedad invertida: {isGravedadInvertida}");
-        
         if (isGravedadInvertida)
         {
             transform.rotation = Quaternion.Euler(0, 0, 180);
             rb.gravityScale = -1;
-            Debug.Log("Aplicando gravedad invertida");
         }
         else
         {
             transform.rotation = Quaternion.Euler(0, 0, 0);
             rb.gravityScale = 1;
-            Debug.Log("Aplicando gravedad normal");
         }
         
-        // Resetear velocidad vertical para evitar efectos extraños
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
     }
 
     public void RestaurarGravedad()
     {
-        Debug.Log("=== RESTAURANDO GRAVEDAD ===");
         isGravedadInvertida = false;
         transform.rotation = Quaternion.Euler(0, 0, 0);
         rb.gravityScale = 1;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-        Debug.Log("Gravedad restaurada a estado normal");
     }
     #endregion
 
     #region Detección de Colisiones y Triggers
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"Trigger detectado con: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
-        
         if (collision.gameObject.CompareTag("DeadZone"))
         {
-            Debug.Log("Entrando en DeadZone - Respawning");
-            PlayerDeath();
+            Die();
         }
         else if (collision.CompareTag("ZonaGravedad"))
         {
-            Debug.Log("Entrando en ZonaGravedad - Cambiando gravedad");
             CambiarGravedad();
         }
         else if (collision.CompareTag("Enemy") && !isAttacking)
         {
-            Debug.Log("Tocaste un enemigo - Recibiendo daño");
             RecibirDaño(1);
         }
         else if (collision.CompareTag("Diamante"))
         {
-            Debug.Log("💎 ¡Diamante recogido! Aumentando capacidad de cambio de gravedad +1");
             maxGravityChanges += 1;
             gravityChangesAvailable += 1;
             collision.gameObject.SetActive(false);
@@ -781,158 +440,31 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.name.ToLower().Contains("portal"))
         {
-            Debug.Log("Portal detectado - Cambiando de nivel...");
-            // Cambio de escena simplificado y más seguro
             int currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
             int nextScene = currentScene + 1;
             
-            // Verificar si la próxima escena existe
             if (nextScene < UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings)
             {
                 UnityEngine.SceneManagement.SceneManager.LoadScene(nextScene);
             }
-            else
-            {
-                Debug.LogWarning("No hay más niveles disponibles");
-            }
-        }
-        else
-        {
-            Debug.Log($"Tag no reconocido: {collision.gameObject.tag}");
         }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // No recibir daño si ya está muriendo/muerto
         if (isDying || currentHealth <= 0)
         {
-            Debug.Log("OnCollisionEnter2D: Jugador muriendo/muerto, ignorando colisión de daño");
             return;
         }
         
         if (collision.gameObject.CompareTag("Enemy") && !isAttacking)
         {
-            Debug.Log("Colisionaste con un enemigo - Recibiendo daño");
             RecibirDaño(1);
         }
     }
     #endregion
 
-    #region Sistema de Respawn
-    public void PlayerDeath()
-    {
-        Debug.Log("¡Jugador ha muerto! Respawneando...");
-        
-        // Respawn de enemigos si está habilitado
-        if (respawnEnemiesOnPlayerDeath)
-        {
-            EnemyManager.RespawnAll();
-            SlimeManager.RespawnAll(); // También respawnear Slimes
-            Debug.Log("EnemyManager: RespawnAll() called because player respawned.");
-            Debug.Log("SlimeManager: RespawnAll() called because player respawned.");
-        }
-        else
-        {
-            EnemyManager.Clear();
-            SlimeManager.Clear(); // También limpiar Slimes
-            Debug.Log("EnemyManager: registry cleared (no respawn on player death).");
-            Debug.Log("SlimeManager: registry cleared (no respawn on player death).");
-        }
-        
-        rb.linearVelocity = Vector2.zero;
-        
-        // Encontrar punto de spawn
-        // Encontrar punto de spawn
-        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
-        if (spawn != null)
-        {
-            transform.localPosition = spawn.transform.localPosition;
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-            isGravedadInvertida = false;
-            rb.gravityScale = 1;
-            spriteRenderer.flipX = false;
-            Debug.Log($"Jugador respawneado en: {spawn.transform.localPosition}");
-        }
-        else
-        {
-            Debug.LogError("No se encontró ningún SpawnPoint con tag 'SpawnPoint'");
-            transform.localPosition = Vector3.zero;
-        }
 
-        // Reiniciar contador de cambios de gravedad
-        maxGravityChanges = baseMaxGravityChanges;
-        gravityChangesAvailable = maxGravityChanges;
-        ActualizarTextoGravedad();
-
-        // Restaurar estado del Animator
-        if (animator != null)
-        {
-            // IMPORTANTE: Resetear el trigger Death inmediatamente para evitar reactivaciones
-            animator.ResetTrigger("Death");
-            animator.ResetTrigger("Hit");
-            animator.ResetTrigger("isDead");
-            
-            Debug.Log("🔄 Triggers Death, Hit, isDead reseteados");
-            
-            // Resetear parámetros bool si existen
-            if (HasAnimatorParameter("isDying", AnimatorControllerParameterType.Bool))
-                animator.SetBool("isDying", false);
-            if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
-                animator.SetBool("isMoving", false);
-            if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
-                animator.SetBool("running", false);
-            if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
-                animator.SetBool("isJumping", false);
-            if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
-                animator.SetBool("isFalling", false);
-            // Solo resetear isAttacking si es Bool, los Triggers se resetean automáticamente
-            if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool))
-                animator.SetBool("isAttacking", false);
-            
-            // Rebind y forzar estado idle
-            animator.Rebind();
-            animator.Update(0f);
-            
-            Debug.Log("🎭 Animator reiniciado a estado idle");
-        }
-
-        // Reiniciar vida y estados
-        currentHealth = maxHealth;
-        cambioVida.Invoke(currentHealth);
-        isAttacking = false;
-        isDying = false; // Resetear el estado de muerte local
-        globalDeathInProgress = false; // Resetear el estado de muerte global
-        canMove = true; // Asegurar que el movimiento esté desbloqueado
-        
-        Debug.Log($"✅ PlayerDeath completado. Vida: {currentHealth}, canMove: {canMove}, isDying: {isDying}, globalDeathInProgress: {globalDeathInProgress}");
-        
-        // Limpiar corrutinas activas
-        if (deathCoroutine != null)
-        {
-            StopCoroutine(deathCoroutine);
-            deathCoroutine = null;
-        }
-        
-        if (hitCoroutine != null)
-        {
-            StopCoroutine(hitCoroutine);
-            hitCoroutine = null;
-        }
-        
-        // Asegurar que el movimiento esté completamente desbloqueado
-        UnlockMovement();
-        
-        // Reactivar el input de ataque
-        if (attackAction != null)
-        {
-            attackAction.Enable();
-            Debug.Log("✅ Input de ataque reactivado después del respawn");
-        }
-
-        FindFirstObjectByType<OrbeRespawnManager>()?.RespawnOrbes();
-    }
-    #endregion
 
     #region Métodos Auxiliares
     private void ActualizarTextoGravedad()
@@ -940,88 +472,6 @@ public class PlayerController : MonoBehaviour
         if (txtGravedad != null)
         {
             txtGravedad.text = $" X {gravityChangesAvailable}";
-        }
-    }
-
-    private void VerificarAnimatorParametros()
-    {
-        if (animator != null)
-        {
-            Debug.Log("=== VERIFICANDO PARÁMETROS DEL ANIMATOR ===");
-            
-            bool hasMovementParam = false;
-            
-            if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
-            {
-                Debug.Log("✅ Parámetro Bool 'isMoving' encontrado");
-                hasMovementParam = true;
-            }
-            
-            if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
-            {
-                Debug.Log("✅ Parámetro Bool 'running' encontrado");
-                hasMovementParam = true;
-            }
-            
-            if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
-            {
-                Debug.Log("✅ Parámetro Bool 'isJumping' encontrado");
-            }
-            else
-            {
-                Debug.LogWarning("❌ Parámetro Bool 'isJumping' NO encontrado");
-            }
-            
-            if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
-            {
-                Debug.Log("✅ Parámetro Bool 'isFalling' encontrado");
-            }
-            else
-            {
-                Debug.LogWarning("❌ Parámetro Bool 'isFalling' NO encontrado");
-            }
-            
-            if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool))
-            {
-                Debug.Log("✅ Parámetro Bool 'isAttacking' encontrado");
-            }
-            else if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Trigger))
-            {
-                Debug.Log("✅ Parámetro Trigger 'isAttacking' encontrado (esto es correcto)");
-            }
-            else
-            {
-                Debug.LogWarning("❌ Parámetro 'isAttacking' NO encontrado");
-            }
-            
-            if (HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
-            {
-                Debug.Log("✅ Trigger 'Hit' encontrado");
-            }
-            else
-            {
-                Debug.LogWarning("❌ Trigger 'Hit' NO encontrado");
-            }
-            
-            if (HasAnimatorParameter("Death", AnimatorControllerParameterType.Trigger))
-            {
-                Debug.Log("✅ Trigger 'Death' encontrado");
-            }
-            else
-            {
-                Debug.LogWarning("❌ Trigger 'Death' NO encontrado");
-            }
-            
-            if (!hasMovementParam)
-            {
-                Debug.LogWarning("❌ Ningún parámetro de movimiento encontrado. Las animaciones de caminar no funcionarán.");
-            }
-            
-            Debug.Log("=== FIN VERIFICACIÓN PARÁMETROS ===");
-        }
-        else
-        {
-            Debug.LogError("❌ No se encontró componente Animator en el GameObject");
         }
     }
 
@@ -1069,43 +519,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Gizmo para el detector de suelo
         if (detector != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(detector.position, sizeDetector);
         }
-        
-        // Gizmo para el área de ataque
-        if (controladorGolpe != null)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(controladorGolpe.position, radioGolpe);
-        }
-    }
-    
-    // Método para depuración - mostrar estado actual de animaciones
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    public void MostrarEstadoAnimaciones()
-    {
-        if (animator == null) 
-        {
-            Debug.Log("❌ Animator es null");
-            return;
-        }
-        
-        Debug.Log("🎭 === ESTADO ACTUAL DE ANIMACIONES ===");
-        Debug.Log($"🏃 running: {(HasAnimatorParameter("running", AnimatorControllerParameterType.Bool) ? animator.GetBool("running") : "N/A")}");
-        Debug.Log($"⬆️ isJumping: {(HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool) ? animator.GetBool("isJumping") : "N/A")}");
-        Debug.Log($"⬇️ isFalling: {(HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool) ? animator.GetBool("isFalling") : "N/A")}");
-        Debug.Log($"⚔️ isAttacking: {(HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool) ? animator.GetBool("isAttacking") : "N/A")}");
-        Debug.Log($"🌍 En suelo (isGrounded): {isGrounded}");
-        Debug.Log($"💨 Velocidad Y: {rb.linearVelocity.y:F2}");
-        Debug.Log($"🤖 Puede moverse: {canMove}");
-        Debug.Log($"❤️ Vida: {currentHealth}/{maxHealth}");
-        Debug.Log($"🔄 Gravedad invertida: {isGravedadInvertida}");
-        Debug.Log($"⚔️ Está atacando: {isAttacking}");
-        Debug.Log("============================================");
     }
     #endregion
 }

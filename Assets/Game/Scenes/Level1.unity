@@ -129409,6 +129409,17 @@ MonoBehaviour:
   attackCooldown: 2
   maxHealth: 1
   currentHealth: 0
+--- !u!114 &1621240463 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9110994137330727436, guid: f43d5697198db1f458c5fc42ad652665, type: 3}
+  m_PrefabInstance: {fileID: 5645203806019175861}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbe4bc0e3889ea4fa784dc5e902f0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1643189592 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2848023492578458502, guid: 0aa1778f82645cd43a6c608910476f28, type: 3}
@@ -135352,21 +135363,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   maxGravityChanges: 2
-  controladorGolpe: {fileID: 0}
-  radioGolpe: 0
-  "da\xF1oGolpe": 0
-  tiempoEntreAtaques: 0.4
-  tiempoSiguienteAtaque: 0
-  swordAttackComponent: {fileID: 0}
+  swordAttackComponent: {fileID: 1621240463}
   maxHealth: 5
   cambioVida:
     m_PersistentCalls:
       m_Calls: []
   ScenaActual: 0
   TieneLlave: 0
-  deathDuration: 2.2
-  hitDuration: 0.5
-  respawnEnemiesOnPlayerDeath: 1
   movementFilter:
     useTriggers: 0
     useLayerMask: 0
