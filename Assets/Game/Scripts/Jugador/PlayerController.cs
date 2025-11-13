@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
     public int currentHealth { get; private set; }
     public UnityEngine.Events.UnityEvent<int> cambioVida;
     
+    [Header("UI")]
+    public MenuPausa menuPausa;
+    
     [Header("Configuración Extra")]
     public int ScenaActual;
     public bool TieneLlave = false;
@@ -328,15 +331,16 @@ public class PlayerController : MonoBehaviour
         }
         
         currentHealth -= daño;
+        currentHealth = Mathf.Max(0, currentHealth); // Asegurar que no sea negativo
         cambioVida.Invoke(currentHealth);
         
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && !isDying)
         {
             Die();
         }
-        else
+        else if (currentHealth > 0)
         {
-            if (animator != null)
+            if (animator != null && HasAnimatorParameter("Hit", AnimatorControllerParameterType.Trigger))
             {
                 animator.SetTrigger("Hit");
             }
@@ -362,26 +366,68 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        // Buscar el SpawnPoint y respawnear al jugador
-        GameObject spawn = GameObject.FindGameObjectWithTag("SpawnPoint");
-        if (spawn != null)
+        if (isDying) return;
+        
+        isDying = true;
+        currentHealth = 0;
+        LockMovement();
+        
+        // Reproducir animación de muerte (solo una vez)
+        if (animator != null)
         {
-            transform.position = spawn.transform.position;
-            // Restaurar vida y estado del jugador
-            currentHealth = maxHealth;
-            cambioVida.Invoke(currentHealth);
-            isDying = false;
-            UnlockMovement();
-            // Restaurar gravedad si está invertida
-            if (isGravedadInvertida)
-            {
-                RestaurarGravedad();
-            }
-            // Restaurar cambios de gravedad disponibles
-            gravityChangesAvailable = maxGravityChanges;
-            ActualizarTextoGravedad();
+            // Desactivar otros parámetros que puedan interferir
+            if (HasAnimatorParameter("running", AnimatorControllerParameterType.Bool))
+                animator.SetBool("running", false);
+            if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
+                animator.SetBool("isMoving", false);
+            if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
+                animator.SetBool("isJumping", false);
+            if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
+                animator.SetBool("isFalling", false);
+            if (HasAnimatorParameter("isAttacking", AnimatorControllerParameterType.Bool))
+                animator.SetBool("isAttacking", false);
+                
+            // Activar trigger de muerte
+            if (HasAnimatorParameter("Death", AnimatorControllerParameterType.Trigger))
+                animator.SetTrigger("Death");
+        }
+        
+        // Esperar a que termine la animación antes de mostrar el panel
+        StartCoroutine(ShowDeathPanelDelayed());
+    }
+
+    private IEnumerator ShowDeathPanelDelayed()
+    {
+        // Esperar 2 segundos para que se vea la animación de muerte
+        yield return new WaitForSeconds(2f);
+        
+        // Detener completamente el animator para evitar loops infinitos
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
+        
+        // Detener cualquier movimiento restante
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.simulated = false; // Desactivar completamente la física
+        }
+        
+        // Buscar el MenuPausa si no está asignado
+        if (menuPausa == null)
+        {
+            menuPausa = FindFirstObjectByType<MenuPausa>();
+        }
+        
+        // Mostrar el menú de pausa como "menú de muerte"
+        if (menuPausa != null)
+        {
+            menuPausa.PausarJuego();
         }
     }
+
+
     
 
 
