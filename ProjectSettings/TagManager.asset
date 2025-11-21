@@ -11,6 +11,7 @@ TagManager:
   - ZonaGravedad
   - Diamante
   - Jefe
+  - Llave
   layers:
   - Default
   - TransparentFX
@@ -68,6 +69,9 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 427561587
+    locked: 0
+  - name: UI
+    uniqueID: 1229509851
     locked: 0
   m_RenderingLayers:
   - Default
