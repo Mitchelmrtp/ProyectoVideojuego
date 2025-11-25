@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -116,9 +116,9 @@ TextureImporter:
       name: Reiniciar_0
       rect:
         serializedVersion: 2
-        x: 50
+        x: 51
         y: 176
-        width: 400
+        width: 399
         height: 125
       alignment: 0
       pivot: {x: 0, y: 0}
