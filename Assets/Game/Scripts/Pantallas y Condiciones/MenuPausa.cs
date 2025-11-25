@@ -19,7 +19,7 @@ public class MenuPausa : MonoBehaviour
             pauseAction.Dispose();
         }
         
-        pauseAction = new InputAction("Pause", InputActionType.Button, "<Keyboard>/escape");
+        pauseAction = new InputAction("Pause", InputActionType.Button, "<Keyboard>/enter");
         pauseAction.Enable();
     }
 
