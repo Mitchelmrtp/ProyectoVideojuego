@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Versión simplificada de Mother: mantiene solo lo esencial.
+// Versión Mother con:
+// - Intro de BOSS FINAL (llamado desde un trigger)
+// - Panel de "Ganaste nivel 1" al morir
+// - Titileo del sprite al recibir daño
 public class Mother : MonoBehaviour
 {
     private Animator animator;
@@ -15,19 +18,34 @@ public class Mother : MonoBehaviour
     public float distanciaPerdida = 15f;
     public float distanciaPostAtaque = 4f;
 
+    [Header("Ataques")]
     public GameObject ataque;
     public GameObject habilidad;
     public GameObject Llave;
-    [Header("Projectile speeds (fallback if projectile has no controller)")]
+
+    [Header("Projectile speeds (fallback si el proyectil no tiene script)")]
     public float ataqueSpeed = 6f;
     public float habilidadSpeed = 4f;
 
+    [Header("Vida")]
     public float vida = 100f;
     public BarraDeVida barraDeVida;
-    public GameObject BarraVida;
+    public GameObject BarraVida;   // Barra de vida del boss (GameObject de UI)
+
+    [Header("UI Boss")]
+    public GameObject panelBossIntro;  // Panel "BOSS FINAL"
+
+    [Header("UI Victoria")]
+    public GameObject panelVictoria;   // Panel "Ganaste nivel 1"
+
+    [Header("Feedback de Daño")]
+    public SpriteRenderer spriteRenderer;   // Sprite del boss
+    public float flashDuration = 0.15f;     // duración total del titileo
+    public float flashInterval = 0.05f;     // intervalo entre on/off
+    private Coroutine flashRoutine;
 
     private bool mirandoDerecha = true;
-    
+
     // Variables para respawn y estado inicial
     private Vector3 originalPosition;
     private float originalVida;
@@ -51,10 +69,19 @@ public class Mother : MonoBehaviour
         {
             barraDeVida.InicializarBarraVida(vida);
         }
+
+        // La barra de vida del boss empieza OCULTA hasta que se active el combate
         if (BarraVida != null)
         {
-            BarraVida.SetActive(true);
+            BarraVida.SetActive(false);
         }
+
+        // Aseguramos que los paneles de UI estén apagados al inicio
+        if (panelVictoria != null)
+            panelVictoria.SetActive(false);
+
+        if (panelBossIntro != null)
+            panelBossIntro.SetActive(false);
 
         // Guardar estado inicial para respawn
         originalPosition = transform.position;
@@ -125,7 +152,6 @@ public class Mother : MonoBehaviour
     }
 
     // Método llamado por AnimationEvent en la animación 'MotherHabilty'
-    // Mantenerlo público y sin parámetros para que Unity pueda encontrarlo.
     public void UsarHabilidad()
     {
         if (habilidad == null || isDead) return;
@@ -160,10 +186,15 @@ public class Mother : MonoBehaviour
 
     public void TomarDaño(float daño)
     {
-        if (isDead) return; // Evitar daño múltiple cuando ya está muerto
+        if (isDead) return; // Evitar daño cuando ya está muerto
         
         vida -= daño;
         if (barraDeVida != null) barraDeVida.CambiarVidaActual(vida);
+
+        // Titileo cada vez que recibe daño
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+        flashRoutine = StartCoroutine(FlashOnHit());
 
         if (vida <= 0f)
         {
@@ -180,11 +211,66 @@ public class Mother : MonoBehaviour
         }
     }
 
-    // Llamar desde animación al morir
+    // Llamar desde animación al morir (Animation Event)
     public void Muerte()
     {
         if (Llave != null) Instantiate(Llave, transform.position, Quaternion.identity);
+
+        // Activar mensaje de victoria
+        if (panelVictoria != null)
+        {
+            panelVictoria.SetActive(true);
+        }
+
         Destroy(gameObject);
+    }
+
+    // Método llamado por el trigger para iniciar la intro de boss
+    public void ShowBossIntro()
+    {
+        if (isDead) return;
+
+        if (panelBossIntro != null)
+        {
+            StartCoroutine(MostrarIntroBoss());
+        }
+
+        // Activar barra de vida cuando empieza el combate
+        if (BarraVida != null)
+        {
+            BarraVida.SetActive(true);
+        }
+    }
+
+    // Coroutine para mostrar el cartel de "BOSS FINAL"
+    private IEnumerator MostrarIntroBoss()
+    {
+        panelBossIntro.SetActive(true);
+        yield return new WaitForSeconds(3f); // tiempo que se ve el mensaje
+        panelBossIntro.SetActive(false);
+    }
+
+    // Titileo del sprite al recibir daño
+    private IEnumerator FlashOnHit()
+    {
+        if (spriteRenderer == null)
+            yield break;
+
+        float elapsed = 0f;
+        bool visible = true;
+
+        while (elapsed < flashDuration)
+        {
+            visible = !visible;
+            spriteRenderer.enabled = visible;
+
+            yield return new WaitForSeconds(flashInterval);
+            elapsed += flashInterval;
+        }
+
+        // Aseguramos que quede visible al final
+        spriteRenderer.enabled = true;
+        flashRoutine = null;
     }
 
     // Método público para respawn/reinicio
@@ -219,13 +305,11 @@ public class Mother : MonoBehaviour
         {
             animator.Rebind();
             animator.Update(0f);
-            
-            // Asegurar que no hay triggers activos
             animator.ResetTrigger("Muerte");
             animator.ResetTrigger("Hit");
         }
         
-        // Restaurar barra de vida
+        // Restaurar barra de vida (apagada hasta que empiece el combate otra vez)
         if (barraDeVida != null)
         {
             barraDeVida.InicializarBarraVida(vida);
@@ -233,8 +317,26 @@ public class Mother : MonoBehaviour
         
         if (BarraVida != null)
         {
-            BarraVida.SetActive(true);
+            BarraVida.SetActive(false);
         }
+
+        // Asegurar sprite visible y sin titileo
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = true;
+        }
+        if (flashRoutine != null)
+        {
+            StopCoroutine(flashRoutine);
+            flashRoutine = null;
+        }
+
+        // Apagar paneles de UI
+        if (panelBossIntro != null)
+            panelBossIntro.SetActive(false);
+
+        if (panelVictoria != null)
+            panelVictoria.SetActive(false);
         
         // Limpiar velocidad si tiene Rigidbody2D
         if (rb2D != null)
@@ -246,4 +348,3 @@ public class Mother : MonoBehaviour
         Debug.Log($"Mother: Respawn completado - Posición: {transform.position}, Vida: {vida}, isDead: {isDead}");
     }
 }
- 
