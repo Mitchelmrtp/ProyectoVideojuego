@@ -8,7 +8,9 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    
+    [Header("Sonidos")]
+    public AudioSource audioSource;
+    public AudioClip attackSound;
     [Header("Detector de suelo")]
     public float speed = 5f;
     public float jumpForce = 10f;
@@ -98,6 +100,9 @@ public class PlayerController : MonoBehaviour
             if (swordAttackComponent == null)
                 swordAttackComponent = GetComponentInChildren<SwordAttack>();
         }
+
+        if (audioSource == null)
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -235,8 +240,11 @@ public class PlayerController : MonoBehaviour
         }
         
         if (isAttacking) return;
-        
+
         isAttacking = true;
+        
+        if (audioSource != null && attackSound != null)
+        audioSource.PlayOneShot(attackSound);
         
         if (animator != null)
         {

@@ -1,10 +1,31 @@
 fileFormatVersion: 2
-guid: cfbe812ffa54ee2439d69cc8b968c1bf
+guid: 43d8d7f667bdce747b2cba36121eb582
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7070110564016678328
-    second: aa_0
+      213: 8842176314304556275
+    second: mouse_tutorial_0
+  - first:
+      213: -4811412467499647622
+    second: mouse_tutorial_1
+  - first:
+      213: -7999252550995774120
+    second: mouse_tutorial_2
+  - first:
+      213: 6911886425138866146
+    second: mouse_tutorial_3
+  - first:
+      213: -930323076113091103
+    second: mouse_tutorial_4
+  - first:
+      213: 4628864427009547841
+    second: mouse_tutorial_5
+  - first:
+      213: -7900087548375598623
+    second: mouse_tutorial_6
+  - first:
+      213: 1989355092617793215
+    second: mouse_tutorial_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -97,7 +118,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Android
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -113,23 +134,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: aa_0
+      name: mouse_tutorial_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1008
-        height: 679
+        x: 64
+        y: 192
+        width: 126
+        height: 129
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8b563f259141e1260800000000000000
-      internalID: 7070110564016678328
+      spriteID: a7d3cce4add6a3db0800000000000000
+      internalID: -4811412467499647622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mouse_tutorial_5
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 25
+        width: 126
+        height: 129
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14e985deba70d3040800000000000000
+      internalID: 4628864427009547841
       vertices: []
       indices: 
       edges: []
@@ -138,7 +181,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: a32afccaa79b91d408c2cd78018e9c6e
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +191,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      aa_0: 7070110564016678328
+      mouse_tutorial_0: 8842176314304556275
+      mouse_tutorial_1: -4811412467499647622
+      mouse_tutorial_2: -7999252550995774120
+      mouse_tutorial_3: 6911886425138866146
+      mouse_tutorial_4: -930323076113091103
+      mouse_tutorial_5: 4628864427009547841
+      mouse_tutorial_6: -7900087548375598623
+      mouse_tutorial_7: 1989355092617793215
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
