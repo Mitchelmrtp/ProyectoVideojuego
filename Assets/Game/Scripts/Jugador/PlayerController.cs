@@ -115,7 +115,10 @@ public class PlayerController : MonoBehaviour
             Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
             isGrounded = colision != null;
             
-            bool canJump = isGravedadInvertida ? !isGrounded : isGrounded;
+            // Cuando la gravedad está invertida, el personaje está en el "suelo" (techo) si hay colisión
+            // Cuando la gravedad es normal, el personaje está en el suelo si hay colisión
+            // En ambos casos, puede saltar si está tocando una superficie
+            bool canJump = isGrounded;
 
         if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
         {

@@ -14,9 +14,12 @@ public class Mother : MonoBehaviour
 
     [Header("Distancias (usadas sólo para referencia)")]
     public float distanciaDeteccion = 10f;
-    public float distanciaAtaque = 3f;
+    public float distanciaAtaque = 5f;      // AJUSTADO para coincidir con Animator (Less 5)
     public float distanciaPerdida = 15f;
     public float distanciaPostAtaque = 4f;
+    
+    [Header("Debug")]
+    public bool mostrarDebugDistancias = true;
 
     [Header("Ataques")]
     public GameObject ataque;
@@ -43,6 +46,16 @@ public class Mother : MonoBehaviour
     public float flashDuration = 0.15f;     // duración total del titileo
     public float flashInterval = 0.05f;     // intervalo entre on/off
     private Coroutine flashRoutine;
+    
+    [Header("Sistema de Daño Mejorado")]
+    public float invincibilityDuration = 0.5f;  // Frames de invencibilidad
+    public float knockbackForce = 25f;          // Fuerza muy alta para retroceso largo
+    public float knockbackDuration = 0.5f;      // Duración más larga para cubrir más distancia
+    public float counterAttackChance = 0.85f;   // 85% de probabilidad de contraatacar
+    public float counterAttackDelay = 0.2f;     // Delay antes de contraatacar
+    private bool isInvincible = false;
+    private bool isKnockedBack = false;
+    private Coroutine knockbackRoutine;
 
     private bool mirandoDerecha = true;
 
@@ -96,8 +109,38 @@ public class Mother : MonoBehaviour
     {
         if (jugador == null || animator == null || isDead) return;
 
-        float distanciaJugador = Vector2.Distance(transform.position, jugador.position);
-        animator.SetFloat("distanciaJugador", distanciaJugador);
+        // No actualizar distancia durante knockback para mantener animación
+        if (!isKnockedBack)
+        {
+            float distanciaJugador = Vector2.Distance(transform.position, jugador.position);
+            animator.SetFloat("distanciaJugador", distanciaJugador);
+            
+            // Debug detallado
+            if (mostrarDebugDistancias)
+            {
+                var currentState = animator.GetCurrentAnimatorStateInfo(0);
+                string estadoNombre = "Desconocido";
+                
+                if (currentState.IsName("Idle")) estadoNombre = "Idle";
+                else if (currentState.IsName("Run")) estadoNombre = "Run";
+                else if (currentState.IsName("Attack")) estadoNombre = "Attack";
+                else if (currentState.IsName("Habilidad")) estadoNombre = "Habilidad";
+                else if (currentState.IsName("Muerte")) estadoNombre = "Muerte";
+                else if (currentState.IsName("Hit")) estadoNombre = "Hit";
+                
+                // Solo mostrar cada 30 frames (cada medio segundo aprox) para no saturar
+                if (Time.frameCount % 30 == 0)
+                {
+                    Debug.Log($"📊 Distancia: {distanciaJugador:F2} | Estado: {estadoNombre} | Tiempo: {currentState.normalizedTime:F2}");
+                }
+                
+                // Avisar cuando entre en estado Attack
+                if (estadoNombre == "Attack")
+                {
+                    Debug.Log($"⚔️ EN ATAQUE - Frame {Time.frameCount} - Tiempo normalizado: {currentState.normalizedTime:F3}");
+                }
+            }
+        }
 
         MirarJugador();
     }
@@ -105,7 +148,7 @@ public class Mother : MonoBehaviour
     // Voltea el sprite según la posición del jugador
     public void MirarJugador()
     {
-        if (jugador == null || isDead) return;
+        if (jugador == null || isDead || isKnockedBack) return; // No girar durante knockback
         bool jugadorALaDerecha = jugador.position.x > transform.position.x;
         if (jugadorALaDerecha != mirandoDerecha)
         {
@@ -119,26 +162,52 @@ public class Mother : MonoBehaviour
     // Instancia el prefab de ataque (si existe)
     public void Atacar()
     {
-        if (ataque == null || isDead) return;
+        Debug.Log("🎯 Atacar() llamado");
+        
+        if (ataque == null)
+        {
+            Debug.LogError("❌ ERROR: Prefab 'ataque' NO está asignado en el Inspector de Mother!");
+            return;
+        }
+        
+        if (isDead)
+        {
+            Debug.Log("⚰️ Mother está muerta, no puede atacar");
+            return;
+        }
+        
+        // Solo bloquear si está en knockback activo
+        if (isKnockedBack)
+        {
+            Debug.Log("💨 Mother está en knockback, ataque bloqueado");
+            return;
+        }
+        
+        Debug.Log($"✅ Instanciando ataque en posición {transform.position}, mirando derecha: {mirandoDerecha}");
         GameObject nuevo = Instantiate(ataque, transform.position, Quaternion.identity);
+        Debug.Log($"✅ Proyectil creado: {nuevo.name}");
 
         // Preferir componente de control de ataque si existe
         var ataqueScript = nuevo.GetComponent<AtaqueNormal>();
         if (ataqueScript != null)
         {
+            Debug.Log("✅ AtaqueNormal component encontrado, configurando dirección");
             if (mirandoDerecha)
             {
                 ataqueScript.SetDirection(Vector2.right);
                 nuevo.transform.localScale = new Vector3(-1, 1, 1);
+                Debug.Log("→ Dirección: DERECHA");
             }
             else
             {
                 ataqueScript.SetDirection(Vector2.left);
                 nuevo.transform.localScale = new Vector3(1, 1, 1);
+                Debug.Log("← Dirección: IZQUIERDA");
             }
             return;
         }
 
+        Debug.Log("⚠️ No tiene AtaqueNormal, usando fallback con Rigidbody2D");
         // Fallback: si tiene Rigidbody2D, darle una velocidad inicial
         var rb = nuevo.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -148,6 +217,11 @@ public class Mother : MonoBehaviour
             Vector3 s = nuevo.transform.localScale;
             s.x = Mathf.Abs(s.x) * (mirandoDerecha ? -1f : 1f);
             nuevo.transform.localScale = s;
+            Debug.Log($"✅ Velocidad aplicada: {rb.linearVelocity}");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ El proyectil no tiene ni AtaqueNormal ni Rigidbody2D");
         }
     }
 
@@ -155,6 +229,10 @@ public class Mother : MonoBehaviour
     public void UsarHabilidad()
     {
         if (habilidad == null || isDead) return;
+        
+        // Solo bloquear si está en knockback activo
+        if (isKnockedBack) return;
+        
         GameObject nueva = Instantiate(habilidad, transform.position, Quaternion.identity);
 
         var habilidadScript = nueva.GetComponent<AtaqueNormal>();
@@ -186,21 +264,34 @@ public class Mother : MonoBehaviour
 
     public void TomarDaño(float daño)
     {
-        if (isDead) return; // Evitar daño cuando ya está muerto
+        if (isDead || isInvincible) return; // Invencibilidad temporal para evitar stunlock
         
         vida -= daño;
-        if (barraDeVida != null) barraDeVida.CambiarVidaActual(vida);
+        if (barraDeVida != null)
+        {
+            barraDeVida.CambiarVidaActual(vida);
+            barraDeVida.AnimarDaño();
+        }
 
         // Titileo cada vez que recibe daño
         if (flashRoutine != null)
             StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashOnHit());
+        
+        // Retroceso mejorado al recibir daño
+        if (knockbackRoutine != null)
+            StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(KnockbackEffect());
+        
+        // Activar invencibilidad temporal
+        StartCoroutine(InvincibilityFrames());
 
         if (vida <= 0f)
         {
-            if (!isDead) // Solo trigger si no estaba muerto antes
+            if (!isDead)
             {
                 isDead = true;
+                isKnockedBack = false;
                 if (animator != null) animator.SetTrigger("Muerte");
                 if (BarraVida != null) BarraVida.SetActive(false);
             }
@@ -208,6 +299,12 @@ public class Mother : MonoBehaviour
         else
         {
             if (animator != null) animator.SetTrigger("Hit");
+            
+            // Posibilidad de contraatacar después del knockback
+            if (Random.value < counterAttackChance)
+            {
+                StartCoroutine(CounterAttack());
+            }
         }
     }
 
@@ -271,6 +368,96 @@ public class Mother : MonoBehaviour
         // Aseguramos que quede visible al final
         spriteRenderer.enabled = true;
         flashRoutine = null;
+    }
+    
+    // Efecto de retroceso al recibir daño - RÁPIDO Y DIRECTO
+    private IEnumerator KnockbackEffect()
+    {
+        if (rb2D == null || jugador == null || animator == null)
+        {
+            knockbackRoutine = null;
+            yield break;
+        }
+        
+        isKnockedBack = true;
+        
+        // Determinar dirección del knockback (opuesta al jugador)
+        float direccionMovimiento = (transform.position.x > jugador.position.x) ? 1f : -1f;
+        
+        // VOLTEAR a Mother para que mire en la dirección del retroceso
+        // Así la animación de run se ve correctamente con los pies moviéndose
+        bool retrocediendoADerecha = direccionMovimiento > 0;
+        Vector3 escala = transform.localScale;
+        escala.x = Mathf.Abs(escala.x) * (retrocediendoADerecha ? 1f : -1f);
+        transform.localScale = escala;
+        
+        // Actualizar la variable interna de dirección
+        mirandoDerecha = retrocediendoADerecha;
+        
+        // Forzar animación de Run inmediatamente
+        animator.SetFloat("distanciaJugador", distanciaDeteccion - 2f);
+        
+        // Aplicar knockback INSTANTÁNEO con velocidad constante y rápida
+        rb2D.linearVelocity = new Vector2(direccionMovimiento * knockbackForce, rb2D.linearVelocity.y);
+        
+        // Mantener la velocidad constante durante toda la duración
+        yield return new WaitForSeconds(knockbackDuration);
+        
+        // Frenar inmediatamente
+        rb2D.linearVelocity = new Vector2(0, rb2D.linearVelocity.y);
+        
+        isKnockedBack = false;
+        
+        // IMPORTANTE: Volver a mirar hacia el jugador después del retroceso
+        if (jugador != null && !isDead)
+        {
+            bool jugadorALaDerecha = jugador.position.x > transform.position.x;
+            if (jugadorALaDerecha != mirandoDerecha)
+            {
+                mirandoDerecha = jugadorALaDerecha;
+                Vector3 s = transform.localScale;
+                s.x = Mathf.Abs(s.x) * (mirandoDerecha ? 1f : -1f);
+                transform.localScale = s;
+            }
+            
+            // Restaurar la distancia real
+            float distanciaReal = Vector2.Distance(transform.position, jugador.position);
+            animator.SetFloat("distanciaJugador", distanciaReal);
+        }
+        
+        knockbackRoutine = null;
+    }
+    
+    // Frames de invencibilidad para evitar stunlock
+    private IEnumerator InvincibilityFrames()
+    {
+        isInvincible = true;
+        yield return new WaitForSeconds(invincibilityDuration);
+        isInvincible = false;
+    }
+    
+    // Contraataque después de recibir daño - SIEMPRE A DISTANCIA
+    private IEnumerator CounterAttack()
+    {
+        // Esperar muy poco después del knockback para contraatacar rápido
+        yield return new WaitForSeconds(counterAttackDelay);
+        
+        if (isDead || jugador == null || isKnockedBack) yield break;
+        
+        // SIEMPRE usar habilidad (ataque a distancia) después de retroceder
+        // Esto garantiza que Mother ataque desde lejos y mantenga la distancia
+        UsarHabilidad();
+        
+        // Pequeña posibilidad de doble ataque si está muy lejos
+        float distancia = Vector2.Distance(transform.position, jugador.position);
+        if (distancia > distanciaDeteccion * 0.8f && Random.value > 0.5f)
+        {
+            yield return new WaitForSeconds(0.8f);
+            if (!isDead && jugador != null)
+            {
+                UsarHabilidad();
+            }
+        }
     }
 
     // Método público para respawn/reinicio

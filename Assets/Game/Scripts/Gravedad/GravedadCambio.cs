@@ -4,7 +4,6 @@ public class GravedadCambio : MonoBehaviour
 {
     public float gravedadNormal = -9.81f;  // Gravedad normal
     public float gravedadInvertida = 9.81f; // Gravedad invertida
-    public GameObject personaje;  // El objeto del personaje
 
     private bool gravedadInvertidaActiva = false; // Controla si la gravedad ya está invertida
 
@@ -13,11 +12,11 @@ public class GravedadCambio : MonoBehaviour
     {
         if (col.CompareTag("Player") && !gravedadInvertidaActiva)  // Asegúrate de que el personaje tiene el tag "Player" y la gravedad no está invertida aún
         {
-            CambiarGravedad();
+            CambiarGravedad(col.gameObject);
         }
     }
 
-    void CambiarGravedad()
+    void CambiarGravedad(GameObject personaje)
     {
         // Obtener el PlayerController del personaje
         PlayerController playerController = personaje.GetComponent<PlayerController>();
@@ -33,7 +32,7 @@ public class GravedadCambio : MonoBehaviour
     }
 
     // Si deseas restaurar la gravedad de alguna manera, puedes agregar otro método que se llame cuando lo desees.
-    public void RestablecerGravedad()
+    public void RestablecerGravedad(GameObject personaje)
     {
         // Obtener el PlayerController del personaje
         PlayerController playerController = personaje.GetComponent<PlayerController>();

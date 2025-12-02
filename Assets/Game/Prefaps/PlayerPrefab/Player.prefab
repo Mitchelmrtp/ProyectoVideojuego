@@ -206,7 +206,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1115572491
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: -1822539124, guid: d60ead327cf3fb0498e2eb57b7ba407d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -258,17 +258,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 6548626434366850739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0244d82853dcec24f954ba71b6196020, type: 3}
+  m_Script: {fileID: 11500000, guid: 25c9db89c69a83346b1c90e39e891903, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
-  collisionOffset: 0.02
-  jumpImpulse: 7
-  detector: {fileID: 2096842006615968779}
+  audioSource: {fileID: 0}
+  attackSound: {fileID: 0}
+  speed: 5
+  jumpForce: 10
+  collisionOffset: 0.05
+  txtGravedad: {fileID: 0}
+  legacyText: {fileID: 0}
+  detector: {fileID: 0}
   sizeDetector: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  maxGravityChanges: 2
+  swordAttackComponent: {fileID: 0}
+  maxHealth: 5
+  cambioVida:
+    m_PersistentCalls:
+      m_Calls: []
+  menuPausa: {fileID: 0}
+  ScenaActual: 0
+  TieneLlave: 0
   movementFilter:
     useTriggers: 0
     useLayerMask: 0
@@ -278,12 +291,12 @@ MonoBehaviour:
     useOutsideNormalAngle: 0
     layerMask:
       serializedVersion: 2
-      m_Bits: 1
+      m_Bits: 0
     minDepth: 0
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
-  swordAttack: {fileID: 9110994137330727436}
+  isAttacking: 0
 --- !u!50 &7349595326935256945
 Rigidbody2D:
   serializedVersion: 5
