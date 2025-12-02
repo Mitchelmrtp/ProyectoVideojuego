@@ -127,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 2
   maxDistance: 35
-  "da\xF1oGolpeEnemigo": 2
+  "da\xF1oGolpeEnemigo": 1
 --- !u!50 &4773250429479584036
 Rigidbody2D:
   serializedVersion: 5

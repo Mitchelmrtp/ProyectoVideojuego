@@ -17,6 +17,15 @@ public class Mother : MonoBehaviour
     public float distanciaDeteccion = 10f;
     public float distanciaPerdida = 15f;
     
+    [Header("Arena Combat Limits")]
+    [Tooltip("Límites de movimiento desde la posición inicial")]
+    public float arenaLimitLeft = 10f;   // Distancia máxima a la izquierda
+    public float arenaLimitRight = 10f;  // Distancia máxima a la derecha
+    public float arenaLimitBottom = 5f;  // Distancia máxima hacia abajo
+    public float arenaLimitTop = 5f;     // Distancia máxima hacia arriba
+    private Vector2 arenaLimitsX;        // Límites horizontales calculados
+    private Vector2 arenaLimitsY;        // Límites verticales calculados
+    
     [Header("Debug")]
     public bool mostrarDebugDistancias = true;
 
@@ -48,13 +57,13 @@ public class Mother : MonoBehaviour
     
     [Header("Sistema de Daño Mejorado")]
     public float invincibilityDuration = 0.5f;  // Frames de invencibilidad
-    public float knockbackForce = 25f;          // Fuerza muy alta para retroceso largo
-    public float knockbackDuration = 0.5f;      // Duración más larga para cubrir más distancia
+    public float teleportDistance = 6f;         // Distancia detrás del jugador para teletransportarse
+    public float teleportCooldown = 1.2f;       // Tiempo que Mother NO puede atacar después del teletransporte
     public float counterAttackChance = 0.85f;   // 85% de probabilidad de contraatacar
     public float counterAttackDelay = 0.2f;     // Delay antes de contraatacar
     private bool isInvincible = false;
-    private bool isKnockedBack = false;
-    private Coroutine knockbackRoutine;
+    private bool canAttackAfterTeleport = true; // Flag para controlar ataques post-teletransporte
+    private Coroutine teleportRoutine;
 
     private bool mirandoDerecha = true;
 
@@ -105,8 +114,13 @@ public class Mother : MonoBehaviour
         originalVida = vida;
         originalMirandoDerecha = mirandoDerecha;
         isDead = false;
+        
+        // Calcular límites de la arena basados en la posición inicial
+        arenaLimitsX = new Vector2(originalPosition.x - arenaLimitLeft, originalPosition.x + arenaLimitRight);
+        arenaLimitsY = new Vector2(originalPosition.y - arenaLimitBottom, originalPosition.y + arenaLimitTop);
 
         Debug.Log($"Mother inicializada - Posición: {originalPosition}, Vida: {originalVida}");
+        Debug.Log($"Arena límites X: [{arenaLimitsX.x:F2}, {arenaLimitsX.y:F2}] Y: [{arenaLimitsY.x:F2}, {arenaLimitsY.y:F2}]");
     }
 
     void Update()
@@ -135,7 +149,8 @@ public class Mother : MonoBehaviour
         }
         
         // EJECUTAR ATAQUE NORMAL cuando estamos en estado Attack al 50% de la animación
-        if (estadoNombre == "Attack" && !ataqueEjecutado)
+        // SOLO si puede atacar (no está en cooldown post-teletransporte)
+        if (estadoNombre == "Attack" && !ataqueEjecutado && canAttackAfterTeleport)
         {
             float tiempoNormalizado = currentState.normalizedTime % 1;
             if (tiempoNormalizado >= 0.5f)
@@ -147,7 +162,8 @@ public class Mother : MonoBehaviour
         }
         
         // EJECUTAR HABILIDAD cuando estamos en estado Habilidad al 70% de la animación
-        if (estadoNombre == "Habilidad" && !habilidadEjecutada)
+        // SOLO si puede atacar (no está en cooldown post-teletransporte)
+        if (estadoNombre == "Habilidad" && !habilidadEjecutada && canAttackAfterTeleport)
         {
             float tiempoNormalizado = currentState.normalizedTime % 1;
             if (tiempoNormalizado >= 0.7f)
@@ -158,26 +174,68 @@ public class Mother : MonoBehaviour
             }
         }
 
-        // No actualizar distancia durante knockback para mantener animación
-        if (!isKnockedBack)
+        // Actualizar distancia al jugador normalmente
+        float distanciaJugador = Vector2.Distance(transform.position, jugador.position);
+        animator.SetFloat("distanciaJugador", distanciaJugador);
+        
+        // Debug detallado
+        if (mostrarDebugDistancias && Time.frameCount % 30 == 0)
         {
-            float distanciaJugador = Vector2.Distance(transform.position, jugador.position);
-            animator.SetFloat("distanciaJugador", distanciaJugador);
-            
-            // Debug detallado
-            if (mostrarDebugDistancias && Time.frameCount % 30 == 0)
-            {
-                Debug.Log($"📊 Distancia: {distanciaJugador:F2} | Estado: {estadoNombre} | Tiempo: {currentState.normalizedTime:F2}");
-            }
+            Debug.Log($"📊 Distancia: {distanciaJugador:F2} | Estado: {estadoNombre} | Tiempo: {currentState.normalizedTime:F2}");
         }
 
         MirarJugador();
+        
+        // Aplicar límites de arena para evitar que Mother salga del área de combate
+        EnforceArenaLimits();
+    }
+    
+    // Mantener a Mother dentro de los límites de la arena
+    private void EnforceArenaLimits()
+    {
+        Vector3 pos = transform.position;
+        bool positionClamped = false;
+        
+        // Limitar posición horizontal
+        if (pos.x < arenaLimitsX.x)
+        {
+            pos.x = arenaLimitsX.x;
+            positionClamped = true;
+        }
+        else if (pos.x > arenaLimitsX.y)
+        {
+            pos.x = arenaLimitsX.y;
+            positionClamped = true;
+        }
+        
+        // Limitar posición vertical
+        if (pos.y < arenaLimitsY.x)
+        {
+            pos.y = arenaLimitsY.x;
+            positionClamped = true;
+        }
+        else if (pos.y > arenaLimitsY.y)
+        {
+            pos.y = arenaLimitsY.y;
+            positionClamped = true;
+        }
+        
+        if (positionClamped)
+        {
+            transform.position = pos;
+            // Detener velocidad si salió de los límites
+            if (rb2D != null)
+            {
+                rb2D.linearVelocity = new Vector2(0, rb2D.linearVelocity.y);
+            }
+            Debug.LogWarning($"⚠️ Mother salió de los límites de la arena. Posición corregida a {pos}");
+        }
     }
 
     // Voltea el sprite según la posición del jugador
     public void MirarJugador()
     {
-        if (jugador == null || isDead || isKnockedBack) return; // No girar durante knockback
+        if (jugador == null || isDead) return;
         bool jugadorALaDerecha = jugador.position.x > transform.position.x;
         if (jugadorALaDerecha != mirandoDerecha)
         {
@@ -335,10 +393,10 @@ public class Mother : MonoBehaviour
             StopCoroutine(flashRoutine);
         flashRoutine = StartCoroutine(FlashOnHit());
         
-        // Retroceso mejorado al recibir daño
-        if (knockbackRoutine != null)
-            StopCoroutine(knockbackRoutine);
-        knockbackRoutine = StartCoroutine(KnockbackEffect());
+        // TELETRANSPORTE TÁCTICO en lugar de knockback
+        if (teleportRoutine != null)
+            StopCoroutine(teleportRoutine);
+        teleportRoutine = StartCoroutine(TacticalTeleport());
         
         // Activar invencibilidad temporal
         StartCoroutine(InvincibilityFrames());
@@ -348,7 +406,6 @@ public class Mother : MonoBehaviour
             if (!isDead)
             {
                 isDead = true;
-                isKnockedBack = false;
                 if (animator != null) animator.SetTrigger("Muerte");
                 if (BarraVida != null) BarraVida.SetActive(false);
             }
@@ -357,7 +414,7 @@ public class Mother : MonoBehaviour
         {
             if (animator != null) animator.SetTrigger("Hit");
             
-            // Posibilidad de contraatacar después del knockback
+            // Posibilidad de contraatacar después del teletransporte
             if (Random.value < counterAttackChance)
             {
                 StartCoroutine(CounterAttack());
@@ -427,62 +484,60 @@ public class Mother : MonoBehaviour
         flashRoutine = null;
     }
     
-    // Efecto de retroceso al recibir daño - RÁPIDO Y DIRECTO
-    private IEnumerator KnockbackEffect()
+    // TELETRANSPORTE TÁCTICO - Aparece detrás del jugador a distancia de ataque
+    private IEnumerator TacticalTeleport()
     {
-        if (rb2D == null || jugador == null || animator == null)
+        if (jugador == null || animator == null)
         {
-            knockbackRoutine = null;
+            teleportRoutine = null;
             yield break;
         }
         
-        isKnockedBack = true;
+        Debug.Log("✨ TELETRANSPORTE TÁCTICO ACTIVADO");
         
-        // Determinar dirección del knockback (opuesta al jugador)
-        float direccionMovimiento = (transform.position.x > jugador.position.x) ? 1f : -1f;
+        // BLOQUEAR ATAQUES durante el teletransporte y cooldown
+        canAttackAfterTeleport = false;
         
-        // VOLTEAR a Mother para que mire en la dirección del retroceso
-        // Así la animación de run se ve correctamente con los pies moviéndose
-        bool retrocediendoADerecha = direccionMovimiento > 0;
-        Vector3 escala = transform.localScale;
-        escala.x = Mathf.Abs(escala.x) * (retrocediendoADerecha ? 1f : -1f);
-        transform.localScale = escala;
+        // Efecto visual breve (el flash ya está activo)
+        yield return new WaitForSeconds(0.1f);
         
-        // Actualizar la variable interna de dirección
-        mirandoDerecha = retrocediendoADerecha;
+        // Calcular posición a distancia táctica del jugador (aleatoriamente a izquierda o derecha)
+        float offsetX = Random.Range(-1f, 1f) > 0 ? teleportDistance : -teleportDistance;
+        Vector3 nuevaPosicion = jugador.position + new Vector3(offsetX, 0, 0);
         
-        // Forzar animación de Run inmediatamente
-        animator.SetFloat("distanciaJugador", distanciaDeteccion - 2f);
+        // VERIFICAR QUE LA NUEVA POSICIÓN ESTÉ DENTRO DE LOS LÍMITES DE LA ARENA
+        nuevaPosicion.x = Mathf.Clamp(nuevaPosicion.x, arenaLimitsX.x, arenaLimitsX.y);
+        nuevaPosicion.y = Mathf.Clamp(nuevaPosicion.y, arenaLimitsY.x, arenaLimitsY.y);
         
-        // Aplicar knockback INSTANTÁNEO con velocidad constante y rápida
-        rb2D.linearVelocity = new Vector2(direccionMovimiento * knockbackForce, rb2D.linearVelocity.y);
+        Debug.Log($"🎯 Posición de teletransporte calculada: {nuevaPosicion} (dentro de límites)");
         
-        // Mantener la velocidad constante durante toda la duración
-        yield return new WaitForSeconds(knockbackDuration);
+        // TELETRANSPORTE INSTANTÁNEO
+        transform.position = nuevaPosicion;
         
-        // Frenar inmediatamente
-        rb2D.linearVelocity = new Vector2(0, rb2D.linearVelocity.y);
+        // Asegurar que Mother mire hacia el jugador inmediatamente
+        MirarJugador();
         
-        isKnockedBack = false;
+        // Actualizar distancia en el animator para que entre en rango de ataque
+        float distanciaReal = Vector2.Distance(transform.position, jugador.position);
+        animator.SetFloat("distanciaJugador", distanciaReal);
         
-        // IMPORTANTE: Volver a mirar hacia el jugador después del retroceso
-        if (jugador != null && !isDead)
+        Debug.Log($"✅ Teletransporte completado a {nuevaPosicion} - Distancia al jugador: {distanciaReal:F2}");
+        
+        // Detener cualquier velocidad residual
+        if (rb2D != null)
         {
-            bool jugadorALaDerecha = jugador.position.x > transform.position.x;
-            if (jugadorALaDerecha != mirandoDerecha)
-            {
-                mirandoDerecha = jugadorALaDerecha;
-                Vector3 s = transform.localScale;
-                s.x = Mathf.Abs(s.x) * (mirandoDerecha ? 1f : -1f);
-                transform.localScale = s;
-            }
-            
-            // Restaurar la distancia real
-            float distanciaReal = Vector2.Distance(transform.position, jugador.position);
-            animator.SetFloat("distanciaJugador", distanciaReal);
+            rb2D.linearVelocity = new Vector2(0, rb2D.linearVelocity.y);
         }
         
-        knockbackRoutine = null;
+        // ESPERAR COOLDOWN antes de permitir ataques nuevamente
+        Debug.Log($"⏳ Esperando {teleportCooldown}s antes de permitir ataques...");
+        yield return new WaitForSeconds(teleportCooldown);
+        
+        // DESBLOQUEAR ATAQUES
+        canAttackAfterTeleport = true;
+        Debug.Log("✅ Mother puede atacar nuevamente");
+        
+        teleportRoutine = null;
     }
     
     // Frames de invencibilidad para evitar stunlock
@@ -496,24 +551,22 @@ public class Mother : MonoBehaviour
     // Contraataque después de recibir daño - SIEMPRE A DISTANCIA
     private IEnumerator CounterAttack()
     {
-        // Esperar muy poco después del knockback para contraatacar rápido
-        yield return new WaitForSeconds(counterAttackDelay);
+        // Esperar el cooldown completo del teletransporte + delay adicional
+        yield return new WaitForSeconds(teleportCooldown + counterAttackDelay);
         
-        if (isDead || jugador == null || isKnockedBack) yield break;
+        if (isDead || jugador == null || !canAttackAfterTeleport) yield break;
         
-        // SIEMPRE usar habilidad (ataque a distancia) después de retroceder
-        // Esto garantiza que Mother ataque desde lejos y mantenga la distancia
-        UsarHabilidad();
+        // FORZAR transición a estado Habilidad en el Animator
+        // Esto asegura que Mother haga la animación antes de disparar
+        Debug.Log("💥 Contraataque activado - Forzando estado Habilidad");
         
-        // Pequeña posibilidad de doble ataque si está muy lejos
-        float distancia = Vector2.Distance(transform.position, jugador.position);
-        if (distancia > distanciaDeteccion * 0.8f && Random.value > 0.5f)
+        if (animator != null)
         {
-            yield return new WaitForSeconds(0.8f);
-            if (!isDead && jugador != null)
-            {
-                UsarHabilidad();
-            }
+            // Forzar distancia que active Habilidad (NumeroAleatorio = 0)
+            animator.SetInteger("NumeroAleatorio", 0);
+            
+            // Dar tiempo para que entre en el estado y la animación dispare normalmente
+            yield return new WaitForSeconds(1.5f);
         }
     }
 
@@ -582,13 +635,47 @@ public class Mother : MonoBehaviour
         if (panelVictoria != null)
             panelVictoria.SetActive(false);
         
-        // Limpiar velocidad si tiene Rigidbody2D
-        if (rb2D != null)
-        {
-            rb2D.linearVelocity = Vector2.zero;
-            rb2D.angularVelocity = 0f;
-        }
         
         Debug.Log($"Mother: Respawn completado - Posición: {transform.position}, Vida: {vida}, isDead: {isDead}");
+    }
+    
+    // Dibujar límites de la arena en el editor
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 centerPos = Application.isPlaying ? originalPosition : transform.position;
+        
+        // Calcular límites
+        float leftX = centerPos.x - arenaLimitLeft;
+        float rightX = centerPos.x + arenaLimitRight;
+        float bottomY = centerPos.y - arenaLimitBottom;
+        float topY = centerPos.y + arenaLimitTop;
+        
+        // Dibujar rectángulo de la arena
+        Gizmos.color = Color.cyan;
+        
+        // Esquinas
+        Vector3 bottomLeft = new Vector3(leftX, bottomY, centerPos.z);
+        Vector3 bottomRight = new Vector3(rightX, bottomY, centerPos.z);
+        Vector3 topLeft = new Vector3(leftX, topY, centerPos.z);
+        Vector3 topRight = new Vector3(rightX, topY, centerPos.z);
+        
+        // Líneas del rectángulo
+        Gizmos.DrawLine(bottomLeft, bottomRight);
+        Gizmos.DrawLine(bottomRight, topRight);
+        Gizmos.DrawLine(topRight, topLeft);
+        Gizmos.DrawLine(topLeft, bottomLeft);
+        
+        // Esferas en las esquinas
+        Gizmos.DrawSphere(bottomLeft, 0.3f);
+        Gizmos.DrawSphere(bottomRight, 0.3f);
+        Gizmos.DrawSphere(topLeft, 0.3f);
+        Gizmos.DrawSphere(topRight, 0.3f);
+        
+        // Etiqueta central
+        #if UNITY_EDITOR
+        UnityEditor.Handles.Label(centerPos + Vector3.up * 2f, "Arena de Combate");
+        UnityEditor.Handles.Label(bottomLeft + Vector3.down * 0.5f, $"L:{arenaLimitLeft}");
+        UnityEditor.Handles.Label(bottomRight + Vector3.down * 0.5f, $"R:{arenaLimitRight}");
+        #endif
     }
 }

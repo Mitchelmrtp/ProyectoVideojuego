@@ -150,6 +150,10 @@ MonoBehaviour:
   jugador: {fileID: 0}
   distanciaDeteccion: 10
   distanciaPerdida: 15
+  arenaLimitLeft: 29.25
+  arenaLimitRight: 6.41
+  arenaLimitBottom: 1.97
+  arenaLimitTop: 5
   mostrarDebugDistancias: 1
   ataque: {fileID: 2409014331475555410, guid: 143e83e77a56a5b4e9d19378c2eeb519, type: 3}
   habilidad: {fileID: 6137052183202068499, guid: 328edaea8b0366f45ac73c8e148c0fdd, type: 3}
@@ -165,8 +169,8 @@ MonoBehaviour:
   flashDuration: 0.15
   flashInterval: 0.05
   invincibilityDuration: 0.5
-  knockbackForce: 8
-  knockbackDuration: 0.3
+  teleportDistance: 6
+  teleportCooldown: 1.2
   counterAttackChance: 0.6
   counterAttackDelay: 0.15
 --- !u!212 &7058851 stripped
