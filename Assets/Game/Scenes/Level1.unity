@@ -149,9 +149,8 @@ MonoBehaviour:
   rb2D: {fileID: 0}
   jugador: {fileID: 0}
   distanciaDeteccion: 10
-  distanciaAtaque: 3.5
   distanciaPerdida: 15
-  distanciaPostAtaque: 4.5
+  mostrarDebugDistancias: 1
   ataque: {fileID: 2409014331475555410, guid: 143e83e77a56a5b4e9d19378c2eeb519, type: 3}
   habilidad: {fileID: 6137052183202068499, guid: 328edaea8b0366f45ac73c8e148c0fdd, type: 3}
   Llave: {fileID: 0}
@@ -165,8 +164,11 @@ MonoBehaviour:
   spriteRenderer: {fileID: 7058851}
   flashDuration: 0.15
   flashInterval: 0.05
+  invincibilityDuration: 0.5
   knockbackForce: 8
   knockbackDuration: 0.3
+  counterAttackChance: 0.6
+  counterAttackDelay: 0.15
 --- !u!212 &7058851 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 4188188911290817879, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
@@ -41696,11 +41698,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7928026482291419137, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 100.06
+      value: -20.62
       objectReference: {fileID: 0}
     - target: {fileID: 7928026482291419137, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -9.46
+      value: -3.37
       objectReference: {fileID: 0}
     - target: {fileID: 7928026482291419137, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
       propertyPath: m_LocalPosition.z

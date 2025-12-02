@@ -12,11 +12,10 @@ public class Mother : MonoBehaviour
     public Rigidbody2D rb2D;
     public Transform jugador;
 
-    [Header("Distancias (usadas sólo para referencia)")]
+    [Header("Distancias - CONTROLADAS POR ANIMATOR")]
+    [Tooltip("Estas son solo de referencia, las transiciones están en el Animator Controller")]
     public float distanciaDeteccion = 10f;
-    public float distanciaAtaque = 5f;      // AJUSTADO para coincidir con Animator (Less 5)
     public float distanciaPerdida = 15f;
-    public float distanciaPostAtaque = 4f;
     
     [Header("Debug")]
     public bool mostrarDebugDistancias = true;
@@ -64,6 +63,11 @@ public class Mother : MonoBehaviour
     private float originalVida;
     private bool originalMirandoDerecha;
     private bool isDead = false;
+    
+    // Control de ejecución de ataques
+    private bool ataqueEjecutado = false;
+    private bool habilidadEjecutada = false;
+    private string ultimoEstado = "";
 
     void Start()
     {
@@ -109,6 +113,51 @@ public class Mother : MonoBehaviour
     {
         if (jugador == null || animator == null || isDead) return;
 
+        // Obtener estado actual del Animator
+        var currentState = animator.GetCurrentAnimatorStateInfo(0);
+        string estadoNombre = "Desconocido";
+        
+        if (currentState.IsName("idle")) estadoNombre = "Idle";
+        else if (currentState.IsName("Run")) estadoNombre = "Run";
+        else if (currentState.IsName("Attack")) estadoNombre = "Attack";
+        else if (currentState.IsName("Habilidad")) estadoNombre = "Habilidad";
+        else if (currentState.IsName("Muerte")) estadoNombre = "Muerte";
+        else if (currentState.IsName("Hit")) estadoNombre = "Hit";
+
+        // SISTEMA DE DETECCIÓN Y EJECUCIÓN AUTOMÁTICA DE ATAQUES
+        // Resetear flags cuando cambiamos de estado
+        if (estadoNombre != ultimoEstado)
+        {
+            Debug.Log($"🔄 CAMBIO DE ESTADO: {ultimoEstado} → {estadoNombre}");
+            ultimoEstado = estadoNombre;
+            ataqueEjecutado = false;
+            habilidadEjecutada = false;
+        }
+        
+        // EJECUTAR ATAQUE NORMAL cuando estamos en estado Attack al 50% de la animación
+        if (estadoNombre == "Attack" && !ataqueEjecutado)
+        {
+            float tiempoNormalizado = currentState.normalizedTime % 1;
+            if (tiempoNormalizado >= 0.5f)
+            {
+                Debug.Log($"🎯 DISPARANDO ATAQUE NORMAL en tiempo {tiempoNormalizado:F3}");
+                Atacar();
+                ataqueEjecutado = true;
+            }
+        }
+        
+        // EJECUTAR HABILIDAD cuando estamos en estado Habilidad al 70% de la animación
+        if (estadoNombre == "Habilidad" && !habilidadEjecutada)
+        {
+            float tiempoNormalizado = currentState.normalizedTime % 1;
+            if (tiempoNormalizado >= 0.7f)
+            {
+                Debug.Log($"⚡ DISPARANDO HABILIDAD en tiempo {tiempoNormalizado:F3}");
+                UsarHabilidad();
+                habilidadEjecutada = true;
+            }
+        }
+
         // No actualizar distancia durante knockback para mantener animación
         if (!isKnockedBack)
         {
@@ -116,29 +165,9 @@ public class Mother : MonoBehaviour
             animator.SetFloat("distanciaJugador", distanciaJugador);
             
             // Debug detallado
-            if (mostrarDebugDistancias)
+            if (mostrarDebugDistancias && Time.frameCount % 30 == 0)
             {
-                var currentState = animator.GetCurrentAnimatorStateInfo(0);
-                string estadoNombre = "Desconocido";
-                
-                if (currentState.IsName("Idle")) estadoNombre = "Idle";
-                else if (currentState.IsName("Run")) estadoNombre = "Run";
-                else if (currentState.IsName("Attack")) estadoNombre = "Attack";
-                else if (currentState.IsName("Habilidad")) estadoNombre = "Habilidad";
-                else if (currentState.IsName("Muerte")) estadoNombre = "Muerte";
-                else if (currentState.IsName("Hit")) estadoNombre = "Hit";
-                
-                // Solo mostrar cada 30 frames (cada medio segundo aprox) para no saturar
-                if (Time.frameCount % 30 == 0)
-                {
-                    Debug.Log($"📊 Distancia: {distanciaJugador:F2} | Estado: {estadoNombre} | Tiempo: {currentState.normalizedTime:F2}");
-                }
-                
-                // Avisar cuando entre en estado Attack
-                if (estadoNombre == "Attack")
-                {
-                    Debug.Log($"⚔️ EN ATAQUE - Frame {Time.frameCount} - Tiempo normalizado: {currentState.normalizedTime:F3}");
-                }
+                Debug.Log($"📊 Distancia: {distanciaJugador:F2} | Estado: {estadoNombre} | Tiempo: {currentState.normalizedTime:F2}");
             }
         }
 
@@ -159,81 +188,104 @@ public class Mother : MonoBehaviour
         }
     }
 
-    // Instancia el prefab de ataque (si existe)
+    // Instancia el prefab de ataque - LLAMADO POR ANIMATION EVENT
     public void Atacar()
     {
-        Debug.Log("🎯 Atacar() llamado");
+        Debug.Log("🎯 ===== ATACAR() LLAMADO =====");
         
         if (ataque == null)
         {
-            Debug.LogError("❌ ERROR: Prefab 'ataque' NO está asignado en el Inspector de Mother!");
+            Debug.LogError("❌ CRÍTICO: El prefab 'ataque' está NULL. Ve al Inspector de Mother y asigna el prefab en el campo 'Ataque'");
             return;
         }
         
         if (isDead)
         {
-            Debug.Log("⚰️ Mother está muerta, no puede atacar");
+            Debug.Log("⚰️ Mother está muerta, cancelando ataque");
             return;
         }
         
-        // Solo bloquear si está en knockback activo
-        if (isKnockedBack)
-        {
-            Debug.Log("💨 Mother está en knockback, ataque bloqueado");
-            return;
-        }
+        Debug.Log($"✅ Creando proyectil de ataque en {transform.position}, mirando {(mirandoDerecha ? "DERECHA" : "IZQUIERDA")}");
         
-        Debug.Log($"✅ Instanciando ataque en posición {transform.position}, mirando derecha: {mirandoDerecha}");
         GameObject nuevo = Instantiate(ataque, transform.position, Quaternion.identity);
-        Debug.Log($"✅ Proyectil creado: {nuevo.name}");
+        
+        if (nuevo == null)
+        {
+            Debug.LogError("❌ ERROR: Instantiate falló, no se creó el GameObject");
+            return;
+        }
+        
+        Debug.Log($"✅ GameObject creado: {nuevo.name}");
 
-        // Preferir componente de control de ataque si existe
+        // Configurar dirección con AtaqueNormal
         var ataqueScript = nuevo.GetComponent<AtaqueNormal>();
         if (ataqueScript != null)
         {
-            Debug.Log("✅ AtaqueNormal component encontrado, configurando dirección");
+            Debug.Log("✅ Componente AtaqueNormal encontrado");
             if (mirandoDerecha)
             {
                 ataqueScript.SetDirection(Vector2.right);
                 nuevo.transform.localScale = new Vector3(-1, 1, 1);
-                Debug.Log("→ Dirección: DERECHA");
+                Debug.Log("→ Configurado para ir a la DERECHA");
             }
             else
             {
                 ataqueScript.SetDirection(Vector2.left);
                 nuevo.transform.localScale = new Vector3(1, 1, 1);
-                Debug.Log("← Dirección: IZQUIERDA");
+                Debug.Log("← Configurado para ir a la IZQUIERDA");
             }
-            return;
-        }
-
-        Debug.Log("⚠️ No tiene AtaqueNormal, usando fallback con Rigidbody2D");
-        // Fallback: si tiene Rigidbody2D, darle una velocidad inicial
-        var rb = nuevo.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            float dir = mirandoDerecha ? 1f : -1f;
-            rb.linearVelocity = new Vector2(dir * ataqueSpeed, rb.linearVelocity.y);
-            Vector3 s = nuevo.transform.localScale;
-            s.x = Mathf.Abs(s.x) * (mirandoDerecha ? -1f : 1f);
-            nuevo.transform.localScale = s;
-            Debug.Log($"✅ Velocidad aplicada: {rb.linearVelocity}");
         }
         else
         {
-            Debug.LogWarning("⚠️ El proyectil no tiene ni AtaqueNormal ni Rigidbody2D");
+            Debug.LogWarning("⚠️ No se encontró AtaqueNormal, usando Rigidbody2D");
+            // Fallback con Rigidbody2D
+            var rb = nuevo.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                float dir = mirandoDerecha ? 1f : -1f;
+                rb.linearVelocity = new Vector2(dir * ataqueSpeed, rb.linearVelocity.y);
+                Vector3 s = nuevo.transform.localScale;
+                s.x = Mathf.Abs(s.x) * (mirandoDerecha ? -1f : 1f);
+                nuevo.transform.localScale = s;
+                Debug.Log($"✅ Rigidbody2D configurado con velocidad: {rb.linearVelocity}");
+            }
+            else
+            {
+                Debug.LogError("❌ El prefab no tiene ni AtaqueNormal ni Rigidbody2D!");
+            }
         }
+        
+        Debug.Log("🎯 ===== FIN ATACAR() =====");
     }
 
     // Método llamado por AnimationEvent en la animación 'MotherHabilty'
     public void UsarHabilidad()
     {
-        if (habilidad == null || isDead) return;
+        Debug.Log("⚡ ===== USAR HABILIDAD() LLAMADO =====");
         
-        // Solo bloquear si está en knockback activo
-        if (isKnockedBack) return;
+        if (habilidad == null)
+        {
+            Debug.LogError("❌ CRÍTICO: El prefab 'habilidad' está NULL");
+            return;
+        }
+        
+        if (isDead)
+        {
+            Debug.Log("⚰️ Mother está muerta, cancelando habilidad");
+            return;
+        }
+        
+        Debug.Log($"✅ Creando proyectil de habilidad en {transform.position}");
         
         GameObject nueva = Instantiate(habilidad, transform.position, Quaternion.identity);
+        
+        if (nueva == null)
+        {
+            Debug.LogError("❌ ERROR: Instantiate falló para habilidad");
+            return;
+        }
+        
+        Debug.Log($"✅ Habilidad creada: {nueva.name}");
 
         var habilidadScript = nueva.GetComponent<AtaqueNormal>();
         if (habilidadScript != null)
@@ -248,18 +300,23 @@ public class Mother : MonoBehaviour
                 habilidadScript.SetDirection(Vector2.left);
                 nueva.transform.localScale = new Vector3(1, 1, 1);
             }
-            return;
+            Debug.Log("✅ Habilidad configurada con AtaqueNormal");
         }
-
-        var rb = nueva.GetComponent<Rigidbody2D>();
-        if (rb != null)
+        else
         {
-            float dir = mirandoDerecha ? 1f : -1f;
-            rb.linearVelocity = new Vector2(dir * habilidadSpeed, rb.linearVelocity.y);
-            Vector3 s = nueva.transform.localScale;
-            s.x = Mathf.Abs(s.x) * (mirandoDerecha ? -1f : 1f);
-            nueva.transform.localScale = s;
+            var rb = nueva.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                float dir = mirandoDerecha ? 1f : -1f;
+                rb.linearVelocity = new Vector2(dir * habilidadSpeed, rb.linearVelocity.y);
+                Vector3 s = nueva.transform.localScale;
+                s.x = Mathf.Abs(s.x) * (mirandoDerecha ? -1f : 1f);
+                nueva.transform.localScale = s;
+                Debug.Log($"✅ Habilidad configurada con Rigidbody2D: {rb.linearVelocity}");
+            }
         }
+        
+        Debug.Log("⚡ ===== FIN USAR HABILIDAD() =====");
     }
 
     public void TomarDaño(float daño)
