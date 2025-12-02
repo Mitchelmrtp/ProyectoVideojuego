@@ -173,6 +173,7 @@ MonoBehaviour:
   teleportCooldown: 1.2
   counterAttackChance: 0.6
   counterAttackDelay: 0.15
+  musicaVictoria: {fileID: 8300000, guid: aac3cb86edc9d544fa946512c0bb1cd5, type: 3}
 --- !u!212 &7058851 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 4188188911290817879, guid: 75b18a627d9f56e4f81e34009cada110, type: 3}
@@ -40135,7 +40136,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 560b6c28769be466cac411d217838574, type: 3}
+  m_Sprite: {fileID: 1727898734062026142, guid: d1d4b4609de8d204a8b55d1f5c231ccc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -42285,7 +42286,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: GANASTE!
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -42524,7 +42525,7 @@ Transform:
   m_GameObject: {fileID: 1652378315}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 106.16, y: -10.53, z: 0}
+  m_LocalPosition: {x: 105.7, y: -10.53, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42544,6 +42545,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Jefe: {fileID: 7058841}
   BarraDeVida: {fileID: 1992149168}
+  musicaJefe: {fileID: 8300000, guid: 0226caefe64d70a439f062434ba7b1ee, type: 3}
 --- !u!61 &1652378318
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -48548,6 +48550,10 @@ PrefabInstance:
       propertyPath: txtGravedad
       value: 
       objectReference: {fileID: 1750999623}
+    - target: {fileID: 3954319477972832780, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
+      propertyPath: musicaInicial
+      value: 
+      objectReference: {fileID: 8300000, guid: e4bfb38a90b49492dbd8ae7f674acf87, type: 3}
     - target: {fileID: 5521483984241908829, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
       propertyPath: m_Name
       value: Player

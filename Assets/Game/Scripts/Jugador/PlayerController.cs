@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     [Header("Sonidos")]
     public AudioSource audioSource;
     public AudioClip attackSound;
+
+    [Header("🎵 Música del nivel")]
+    public AudioClip musicaInicial;
+
     [Header("Detector de suelo")]
     public float speed = 5f;
     public float jumpForce = 10f;
@@ -393,6 +397,10 @@ public class PlayerController : MonoBehaviour
         
         isDying = true;
         currentHealth = 0;
+
+        if (musicaInicial != null)
+            MusicManager.Instance.PlayMusic(musicaInicial);
+
         LockMovement();
         
         // Reproducir animación de muerte (solo una vez)

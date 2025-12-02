@@ -67,6 +67,9 @@ public class Mother : MonoBehaviour
 
     private bool mirandoDerecha = true;
 
+    [Header("🎵 Música del Jefe Derrotado")]
+    public AudioClip musicaVictoria;
+
     // Variables para respawn y estado inicial
     private Vector3 originalPosition;
     private float originalVida;
@@ -431,6 +434,17 @@ public class Mother : MonoBehaviour
         if (panelVictoria != null)
         {
             panelVictoria.SetActive(true);
+        }
+
+        // ⭐ CAMBIO DE MÚSICA CUANDO EL JEFE MUERE ⭐
+        if (musicaVictoria != null)
+        {
+            MusicManager.Instance.PlayMusic(musicaVictoria);
+            Debug.Log("🎵 Música de victoria reproducida");
+        }
+        else
+        {
+            Debug.LogWarning("⚠ No se asignó musicaVictoria en el inspector.");
         }
 
         Destroy(gameObject);

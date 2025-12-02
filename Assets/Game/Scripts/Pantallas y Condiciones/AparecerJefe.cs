@@ -7,28 +7,26 @@ public class AparecerJefe : MonoBehaviour
     public GameObject Jefe;
     public GameObject BarraDeVida;
 
+    [Header("🎵 Música del Jefe")]
+    public AudioClip musicaJefe;   // <-- arrastra tu música aquí
+
     private void Start()
     {
-        // Verificar que las referencias estén asignadas
         if (Jefe == null)
         {
             Debug.LogError("❌ AparecerJefe: Jefe no está asignado en el inspector");
         }
         else
         {
-            Debug.Log($"✅ AparecerJefe: Jefe asignado: {Jefe.name}");
-            // Asegurar que el jefe esté inicialmente desactivado
             Jefe.SetActive(false);
         }
-        
+
         if (BarraDeVida == null)
         {
-            Debug.LogWarning("⚠️ AparecerJefe: BarraDeVida no está asignada en el inspector");
+            Debug.LogWarning("⚠ AparecerJefe: BarraDeVida no está asignada en el inspector");
         }
         else
         {
-            Debug.Log($"✅ AparecerJefe: BarraDeVida asignada: {BarraDeVida.name}");
-            // Asegurar que la barra esté inicialmente desactivada
             BarraDeVida.SetActive(false);
         }
     }
@@ -36,29 +34,30 @@ public class AparecerJefe : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log($"🔍 AparecerJefe: Objeto detectado: {other.name} con tag: {other.tag}");
-        
+
         if (other.CompareTag("Player"))
         {
             Debug.Log("🎯 AparecerJefe: ¡Jugador detectado! Activando jefe...");
-            
+
             if (Jefe != null)
-            {
                 Jefe.SetActive(true);
-                Debug.Log("👹 AparecerJefe: Jefe activado");
-            }
-            
+
             if (BarraDeVida != null)
-            {
                 BarraDeVida.SetActive(true);
-                Debug.Log("📊 AparecerJefe: Barra de vida activada");
+
+            // ⭐⭐ CAMBIO DE MÚSICA ⭐⭐
+            if (musicaJefe != null)
+            {
+                MusicManager.Instance.PlayMusic(musicaJefe);
+                Debug.Log("🎵 Música del Jefe activada");
             }
-            
-            Debug.Log("🔒 AparecerJefe: Desactivando trigger...");
-            gameObject.SetActive(false); // Desactiva el GameObject que contiene este script y el collider
-        }
-        else
-        {
-            Debug.Log($"⚠️ AparecerJefe: Objeto ignorado (tag: {other.tag})");
+            else
+            {
+                Debug.LogWarning("⚠ No se asignó músicaJefe en el inspector.");
+            }
+
+            // Desactiva el trigger
+            gameObject.SetActive(false);
         }
     }
 }
