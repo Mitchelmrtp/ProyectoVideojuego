@@ -48543,6 +48543,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 2086387228}
     m_Modifications:
     - target: {fileID: 3954319477972832780, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
+      propertyPath: maxHealth
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3954319477972832780, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
       propertyPath: legacyText
       value: 
       objectReference: {fileID: 397945958}
@@ -48554,6 +48558,10 @@ PrefabInstance:
       propertyPath: musicaInicial
       value: 
       objectReference: {fileID: 8300000, guid: e4bfb38a90b49492dbd8ae7f674acf87, type: 3}
+    - target: {fileID: 3954319477972832780, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
+      propertyPath: maxGravityChanges
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5521483984241908829, guid: 098394cf1565ac543bfb25c382d54178, type: 3}
       propertyPath: m_Name
       value: Player

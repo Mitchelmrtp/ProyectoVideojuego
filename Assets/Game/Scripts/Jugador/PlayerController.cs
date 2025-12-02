@@ -51,6 +51,10 @@ public class PlayerController : MonoBehaviour
     public int ScenaActual;
     public bool TieneLlave = false;
 
+    [Header("Input System")]
+    [Tooltip("InputActionAsset que contiene todas las acciones del jugador")]
+    public InputActionAsset inputActions;
+
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
@@ -58,10 +62,17 @@ public class PlayerController : MonoBehaviour
     public ContactFilter2D movementFilter;
     Vector2 movementInput;
     List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
+    
+    // Referencias a las acciones del Input System
     private InputAction jumpAction;
     private InputAction testGravityAction;
     private InputAction moveAction;
     private InputAction attackAction;
+    private InputActionMap playerActionMap;
+
+    [Header("Zoom Integration")]
+    [Tooltip("Script de zoom de la cámara (se detectará automáticamente)")]
+    public CameraZoom cameraZoom;
     
     bool canMove = true;
     [HideInInspector] public bool isAttacking = false;
@@ -75,18 +86,12 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         
-        // Reinicializar todas las acciones de input manualmente para evitar problemas de referencia
-        jumpAction = new InputAction("Jump", InputActionType.Button, "<Keyboard>/space");
-        jumpAction.Enable();
+        // Inicializar Input System usando el InputActionAsset
+        InitializeInputSystem();
         
-        testGravityAction = new InputAction("TestGravity", InputActionType.Button, "<Mouse>/rightButton");
-        testGravityAction.Enable();
-        
-        moveAction = new InputAction("Move", InputActionType.Value, "<Keyboard>/a,<Keyboard>/d,<Keyboard>/leftArrow,<Keyboard>/rightArrow");
-        moveAction.Enable();
-        
-        attackAction = new InputAction("Attack", InputActionType.Button, "<Mouse>/leftButton");
-        attackAction.Enable();
+        // Auto-find zoom script if not assigned
+        if (cameraZoom == null)
+            cameraZoom = FindFirstObjectByType<CameraZoom>();
         
         // Asegurar que todas las variables de estado se reseteen correctamente
         canMove = true;
@@ -112,56 +117,109 @@ public class PlayerController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    void Update()
+    private void InitializeInputSystem()
     {
-        if (detector != null)
+        // Si no hay InputActionAsset asignado, crear acciones manualmente (fallback)
+        if (inputActions == null)
         {
-            Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
-            isGrounded = colision != null;
+            Debug.LogWarning("No InputActionAsset asignado, usando InputActions manuales como fallback");
+            CreateManualInputActions();
+            return;
+        }
+
+        // Usar el InputActionAsset asignado
+        playerActionMap = inputActions.FindActionMap("Player");
+        if (playerActionMap != null)
+        {
+            // Obtener referencias a las acciones
+            jumpAction = playerActionMap.FindAction("Jump");
+            moveAction = playerActionMap.FindAction("Move");
+            attackAction = playerActionMap.FindAction("Attack");
             
-            // Cuando la gravedad está invertida, el personaje está en el "suelo" (techo) si hay colisión
-            // Cuando la gravedad es normal, el personaje está en el suelo si hay colisión
-            // En ambos casos, puede saltar si está tocando una superficie
-            bool canJump = isGrounded;
-
-        if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
-        {
-            float jumpDirection = isGravedadInvertida ? -jumpForce : jumpForce;
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
-        }
-            if (animator != null)
+            // Buscar la nueva acción de cambio de gravedad
+            testGravityAction = playerActionMap.FindAction("ChangeGravity");
+            
+            // Si no existe ChangeGravity, usar Crouch como fallback
+            if (testGravityAction == null)
             {
-                if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
-                    animator.SetBool("isJumping", !isGrounded && rb.linearVelocity.y > 0f);
-                if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
-                    animator.SetBool("isFalling", !isGrounded && rb.linearVelocity.y < 0f);
-                if (HasAnimatorParameter("isGrounded", AnimatorControllerParameterType.Bool))
-                    animator.SetBool("isGrounded", isGrounded);
-                if (HasAnimatorParameter("verticalVel", AnimatorControllerParameterType.Float))
-                    animator.SetFloat("verticalVel", rb.linearVelocity.y);
+                testGravityAction = playerActionMap.FindAction("Crouch");
+                Debug.LogWarning("Acción 'ChangeGravity' no encontrada, usando 'Crouch' como fallback");
             }
-        }
-
-        if (testGravityAction.WasPressedThisFrame())
-        {
-            if (gravityChangesAvailable > 0)
+            
+            // Configurar callbacks
+            if (moveAction != null)
             {
-                CambiarGravedad();
-                gravityChangesAvailable--;
-                ActualizarTextoGravedad();
+                moveAction.performed += OnMovePerformed;
+                moveAction.canceled += OnMoveCanceled;
             }
+            
+            if (attackAction != null)
+            {
+                attackAction.performed += OnAttackPerformed;
+            }
+            
+            // Habilitar el action map
+            playerActionMap.Enable();
+            
+            Debug.Log("✅ Input System inicializado usando InputActionAsset");
         }
-        
-
+        else
+        {
+            Debug.LogError("No se encontró el ActionMap 'Player' en el InputActionAsset");
+            CreateManualInputActions();
+        }
     }
 
-    void OnMove(InputValue movementValue)
+    private void CreateManualInputActions()
     {
-        Vector2 fullInput = movementValue.Get<Vector2>();
-        movementInput = new Vector2(fullInput.x, 0);
+        // Crear acciones manualmente como fallback
+        jumpAction = new InputAction("Jump", InputActionType.Button);
+        jumpAction.AddBinding("<Keyboard>/space");
+        jumpAction.AddBinding("<Gamepad>/buttonSouth");
+        jumpAction.Enable();
+        
+        testGravityAction = new InputAction("TestGravity", InputActionType.Button);
+        testGravityAction.AddBinding("<Mouse>/rightButton");
+        testGravityAction.AddBinding("<Gamepad>/buttonNorth");
+        testGravityAction.Enable();
+        
+        moveAction = new InputAction("Move", InputActionType.Value);
+        moveAction.AddBinding("<Gamepad>/leftStick");
+        moveAction.AddCompositeBinding("Dpad")
+            .With("Up", "<Keyboard>/w")
+            .With("Down", "<Keyboard>/s")
+            .With("Left", "<Keyboard>/a")
+            .With("Right", "<Keyboard>/d");
+        moveAction.AddCompositeBinding("Dpad")
+            .With("Up", "<Keyboard>/upArrow")
+            .With("Down", "<Keyboard>/downArrow")
+            .With("Left", "<Keyboard>/leftArrow")
+            .With("Right", "<Keyboard>/rightArrow");
+        moveAction.performed += OnMovePerformed;
+        moveAction.canceled += OnMoveCanceled;
+        moveAction.Enable();
+        
+        attackAction = new InputAction("Attack", InputActionType.Button);
+        attackAction.AddBinding("<Mouse>/leftButton");
+        attackAction.AddBinding("<Gamepad>/rightTrigger");
+        attackAction.performed += OnAttackPerformed;
+        attackAction.Enable();
+        
+        Debug.Log("✅ Input System inicializado usando InputActions manuales");
     }
 
-    void OnFire()
+    private void OnMovePerformed(InputAction.CallbackContext context)
+    {
+        Vector2 input = context.ReadValue<Vector2>();
+        movementInput = new Vector2(input.x, 0);
+    }
+    
+    private void OnMoveCanceled(InputAction.CallbackContext context)
+    {
+        movementInput = Vector2.zero;
+    }
+    
+    private void OnAttackPerformed(InputAction.CallbackContext context)
     {
         if (currentHealth <= 0 || isDying)
         {
@@ -186,6 +244,49 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isAttacking", true);
 
         SwordAttack();
+    }
+
+    void Update()
+    {
+        if (detector != null)
+        {
+            Collider2D colision = Physics2D.OverlapCircle(detector.position, sizeDetector, groundLayer);
+            isGrounded = colision != null;
+            
+            // Cuando la gravedad está invertida, el personaje está en el "suelo" (techo) si hay colisión
+            // Cuando la gravedad es normal, el personaje está en el suelo si hay colisión
+            // En ambos casos, puede saltar si está tocando una superficie
+            bool canJump = isGrounded;
+
+            if (jumpAction != null && jumpAction.WasPressedThisFrame() && canJump && canMove)
+            {
+                float jumpDirection = isGravedadInvertida ? -jumpForce : jumpForce;
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpDirection);
+            }
+            
+            if (animator != null)
+            {
+                if (HasAnimatorParameter("isJumping", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isJumping", !isGrounded && rb.linearVelocity.y > 0f);
+                if (HasAnimatorParameter("isFalling", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isFalling", !isGrounded && rb.linearVelocity.y < 0f);
+                if (HasAnimatorParameter("isGrounded", AnimatorControllerParameterType.Bool))
+                    animator.SetBool("isGrounded", isGrounded);
+                if (HasAnimatorParameter("verticalVel", AnimatorControllerParameterType.Float))
+                    animator.SetFloat("verticalVel", rb.linearVelocity.y);
+            }
+        }
+
+        // Cambio de gravedad y zoom
+        if (testGravityAction != null && testGravityAction.WasPressedThisFrame())
+        {
+            if (gravityChangesAvailable > 0)
+            {
+                CambiarGravedadConZoom();
+                gravityChangesAvailable--;
+                ActualizarTextoGravedad();
+            }
+        }
     }
 
     void FixedUpdate()
@@ -484,12 +585,40 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
     }
 
+    /// <summary>
+    /// Cambia la gravedad y activa/desactiva el zoom out automáticamente
+    /// </summary>
+    public void CambiarGravedadConZoom()
+    {
+        // Cambiar la gravedad
+        CambiarGravedad();
+        
+        // Controlar el zoom automáticamente
+        if (cameraZoom != null)
+        {
+            // Si la gravedad está invertida, activar zoom out, sino zoom normal
+            cameraZoom.SetZoomedOut(isGravedadInvertida);
+            
+            Debug.Log($"🎮 Gravedad cambiada: {(isGravedadInvertida ? "INVERTIDA" : "NORMAL")} | Zoom: {(isGravedadInvertida ? "OUT" : "IN")}");
+        }
+        else
+        {
+            Debug.LogWarning("CameraZoom no encontrado - solo se cambió la gravedad");
+        }
+    }
+
     public void RestaurarGravedad()
     {
         isGravedadInvertida = false;
         transform.rotation = Quaternion.Euler(0, 0, 0);
         rb.gravityScale = 1;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        
+        // Restaurar zoom también
+        if (cameraZoom != null)
+        {
+            cameraZoom.SetZoomedOut(false);
+        }
     }
     #endregion
 
@@ -576,28 +705,49 @@ public class PlayerController : MonoBehaviour
     
     private void OnDestroy()
     {
-        if (testGravityAction != null)
-        {
-            testGravityAction.Disable();
-            testGravityAction.Dispose();
-        }
-        
+        // Limpiar callbacks del Input System
         if (moveAction != null)
         {
-            moveAction.Disable();
-            moveAction.Dispose();
+            moveAction.performed -= OnMovePerformed;
+            moveAction.canceled -= OnMoveCanceled;
         }
         
         if (attackAction != null)
         {
-            attackAction.Disable();
-            attackAction.Dispose();
+            attackAction.performed -= OnAttackPerformed;
         }
         
-        if (jumpAction != null)
+        // Deshabilitar y limpiar acciones
+        if (playerActionMap != null)
         {
-            jumpAction.Disable();
-            jumpAction.Dispose();
+            playerActionMap.Disable();
+        }
+        else
+        {
+            // Limpiar acciones manuales si se usaron
+            if (testGravityAction != null)
+            {
+                testGravityAction.Disable();
+                testGravityAction.Dispose();
+            }
+            
+            if (moveAction != null)
+            {
+                moveAction.Disable();
+                moveAction.Dispose();
+            }
+            
+            if (attackAction != null)
+            {
+                attackAction.Disable();
+                attackAction.Dispose();
+            }
+            
+            if (jumpAction != null)
+            {
+                jumpAction.Disable();
+                jumpAction.Dispose();
+            }
         }
     }
 
