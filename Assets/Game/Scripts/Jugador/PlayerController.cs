@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
+using System.Xml;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,6 +20,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI txtGravedad;
+    [SerializeField] private Text legacyText;
 
     [Header("Parámetros para detector de piso")]
     [SerializeField] private Transform detector;
@@ -532,10 +535,17 @@ public class PlayerController : MonoBehaviour
     #region Métodos Auxiliares
     private void ActualizarTextoGravedad()
     {
+        // if (txtGravedad != null)
+        //  {
+        // txtGravedad.text = $" X {gravityChangesAvailable}";
+        // }
+        string contenido = $" X {gravityChangesAvailable}";
+
         if (txtGravedad != null)
-        {
-            txtGravedad.text = $" X {gravityChangesAvailable}";
-        }
+            txtGravedad.text = contenido;
+
+        if (legacyText != null)
+            legacyText.text = contenido;
     }
 
     private bool HasAnimatorParameter(string name, UnityEngine.AnimatorControllerParameterType type)
