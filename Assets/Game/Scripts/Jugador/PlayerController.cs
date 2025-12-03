@@ -66,6 +66,7 @@ public class PlayerController : MonoBehaviour
     // Referencias a las acciones del Input System
     private InputAction jumpAction;
     private InputAction testGravityAction;
+    private InputAction zoomAction;
     private InputAction moveAction;
     private InputAction attackAction;
     private InputActionMap playerActionMap;
@@ -139,6 +140,9 @@ public class PlayerController : MonoBehaviour
             // Buscar la nueva acción de cambio de gravedad
             testGravityAction = playerActionMap.FindAction("ChangeGravity");
             
+            // Buscar la acción de zoom
+            zoomAction = playerActionMap.FindAction("ZoomOut");
+            
             // Si no existe ChangeGravity, usar Crouch como fallback
             if (testGravityAction == null)
             {
@@ -180,8 +184,13 @@ public class PlayerController : MonoBehaviour
         
         testGravityAction = new InputAction("TestGravity", InputActionType.Button);
         testGravityAction.AddBinding("<Mouse>/rightButton");
-        testGravityAction.AddBinding("<Gamepad>/buttonNorth");
+        testGravityAction.AddBinding("<Gamepad>/buttonWest");
         testGravityAction.Enable();
+        
+        zoomAction = new InputAction("ZoomOut", InputActionType.Button);
+        zoomAction.AddBinding("<Keyboard>/z");
+        zoomAction.AddBinding("<Gamepad>/leftStickPress");
+        zoomAction.Enable();
         
         moveAction = new InputAction("Move", InputActionType.Value);
         moveAction.AddBinding("<Gamepad>/leftStick");
@@ -277,14 +286,26 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Cambio de gravedad y zoom
+        // Cambio de gravedad
         if (testGravityAction != null && testGravityAction.WasPressedThisFrame())
         {
             if (gravityChangesAvailable > 0)
             {
-                CambiarGravedadConZoom();
+                CambiarGravedad();
                 gravityChangesAvailable--;
                 ActualizarTextoGravedad();
+            }
+        }
+        
+        // Control de zoom independiente
+        if (zoomAction != null && zoomAction.WasPressedThisFrame())
+        {
+            if (cameraZoom != null)
+            {
+                // Toggle zoom
+                bool currentZoom = cameraZoom.IsZoomedOut();
+                cameraZoom.SetZoomedOut(!currentZoom);
+                Debug.Log($"📷 Zoom: {(!currentZoom ? "OUT" : "IN")}");
             }
         }
     }
@@ -729,6 +750,12 @@ public class PlayerController : MonoBehaviour
             {
                 testGravityAction.Disable();
                 testGravityAction.Dispose();
+            }
+            
+            if (zoomAction != null)
+            {
+                zoomAction.Disable();
+                zoomAction.Dispose();
             }
             
             if (moveAction != null)

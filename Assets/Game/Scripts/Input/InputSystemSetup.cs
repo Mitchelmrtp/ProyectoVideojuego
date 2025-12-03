@@ -94,13 +94,15 @@ public class InputSystemSetup : MonoBehaviour
         Debug.Log("      • Stick Izquierdo: Movimiento");
         Debug.Log("      • A (ButtonSouth): Saltar");
         Debug.Log("      • R2 (RightTrigger): Atacar");
-        Debug.Log("      • Y (ButtonNorth): Cambiar Gravedad + Zoom");
+        Debug.Log("      • □ (ButtonWest): Cambiar Gravedad");
+        Debug.Log("      • L3 (LeftStickPress): Zoom Out/In");
         Debug.Log("      • Start/Options: Menú de Pausa");
         Debug.Log("   ⌨️ Teclado:");
         Debug.Log("      • WASD / Flechas: Movimiento");
         Debug.Log("      • Espacio: Saltar");
         Debug.Log("      • Click Izquierdo: Atacar");
-        Debug.Log("      • Q / Click Derecho: Cambiar Gravedad + Zoom");
+        Debug.Log("      • Q / Click Derecho: Cambiar Gravedad");
+        Debug.Log("      • Z: Zoom Out/In");
         Debug.Log("      • Enter / Escape: Menú de Pausa");
     }
 
@@ -135,7 +137,7 @@ public class InputSystemSetup : MonoBehaviour
         }
 
         // Verificar acciones requeridas
-        string[] requiredActions = { "Move", "Jump", "Attack", "ChangeGravity", "Pause" };
+        string[] requiredActions = { "Move", "Jump", "Attack", "ChangeGravity", "ZoomOut", "Pause" };
         foreach (string actionName in requiredActions)
         {
             var action = playerMap.FindAction(actionName);
